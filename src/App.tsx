@@ -1,10 +1,10 @@
-import Login from "./assets/pages/Authentication/Login"
+import './App.css'
 
 function App() {
 
   return (
     <>
-      <Login />
+      <h1>Hello, World</h1>   
     </>
   )
 }
