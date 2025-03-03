@@ -9,11 +9,14 @@ import { Button } from "@/components/ui/button"
 import { Loader } from "lucide-react"
 import Google from '@/assets/icons/google.png'
 import Image from "next/image"
+import { RadioGroup } from "@radix-ui/react-radio-group"
+import { RadioGroupItem } from "./ui/radio-group"
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
 export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps) {
     const [isLoading, setIsLoading] = React.useState<boolean>(false)
+    const [occupation, setOccupation] = React.useState<string>("nutricionista");
 
     async function onSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
@@ -28,16 +31,81 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
         <div className={cn("grid gap-6", className)} {...props}>
             <form onSubmit={onSubmit}>
                 <div className="grid gap-2">
-                    <div className="grid gap-1">
-                        <Label className="sr-only" htmlFor="email">
-                            Email
-                        </Label>
+                    <RadioGroup
+                        onValueChange={setOccupation}
+                        value={occupation}
+                        className="flex items-center justify-around mb-4" defaultValue="option-one">
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="nutricionista" id="nutricionista" />
+                            <Label htmlFor="nutricionista">Sou Nutricionista</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="personal-trainer" id="personal-trainer" />
+                            <Label htmlFor="personal-trainer">Sou Personal Trainer</Label>
+                        </div>
+                    </RadioGroup>
+
+                    <div className="grid gap-2">
+                        <div className="flex items-center gap-2">
+                            <Input
+                                id="name"
+                                placeholder="Digite seu nome"
+                                type="text"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                disabled={isLoading}
+                            />
+
+                            {occupation === "nutricionista" ? (
+                                <Input
+                                    id="nutricionista"
+                                    placeholder="Digite seu CRN"
+                                    type="text"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                    disabled={isLoading}
+                                />
+                            ) : (
+                                <Input
+                                    id="personal-trainer"
+                                    placeholder="Digite seu CREF"
+                                    type="text"
+                                    autoCapitalize="none"
+                                    autoCorrect="off"
+                                    disabled={isLoading}
+                                />
+                            )}
+                        </div>
+
+
+
+
                         <Input
                             id="email"
-                            placeholder="nome@exemplo.com"
+                            placeholder="Digite seu e-mail"
                             type="email"
                             autoCapitalize="none"
                             autoComplete="email"
+                            autoCorrect="off"
+                            disabled={isLoading}
+                        />
+                        <Input
+                            className="mt-1"
+                            id="password"
+                            placeholder="Digite sua senha"
+                            type="password"
+                            autoCapitalize="none"
+                            autoComplete="new-password"
+                            autoCorrect="off"
+                            disabled={isLoading}
+                        />
+                        <Input
+                            className="mt-1"
+                            id="password"
+                            placeholder="Confirme sua senha"
+                            type="password"
+                            autoCapitalize="none"
+                            autoComplete="new-password"
                             autoCorrect="off"
                             disabled={isLoading}
                         />
@@ -46,7 +114,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         {isLoading && (
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                         )}
-                        Criar
+                        Criar conta
                     </Button>
                 </div>
             </form>
