@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Loader } from "lucide-react"
 import Google from '@/assets/icons/google.png'
 import Image from "next/image"
+import Link from "next/link"
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -35,7 +36,7 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                         </Label>
                         <Input
                             id="email"
-                            placeholder="Insira seu e-mail"
+                            placeholder="E-mail"
                             type="email"
                             autoCapitalize="none"
                             autoComplete="email"
@@ -45,7 +46,7 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                         <Input
                             className="mt-2"
                             id="password"
-                            placeholder="Digite sua senha"
+                            placeholder="Senha"
                             type="password"
                             autoCapitalize="none"
                             autoCorrect="off"
@@ -64,11 +65,23 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                             </div>
                         </div>
                     </div>
-                    <Button disabled={isLoading} className="cursor-pointer">
+                    <Button
+                        disabled={isLoading}
+                        className="cursor-pointer bg-primary-custom hover:bg-green-700 transition-colors duration-100 ease-in text-white"
+                    >
+                        {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+                        Entrar
+                    </Button>
+                    <Button
+
+                        variant={"link"}
+                        disabled={isLoading}
+                        className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
                         {isLoading && (
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                         )}
-                        Entrar
+                        <Link href="/register">Ainda não possuo uma conta</Link>
+
                     </Button>
                 </div>
             </form>

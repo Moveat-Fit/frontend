@@ -11,6 +11,7 @@ import Google from '@/assets/icons/google.png'
 import Image from "next/image"
 import { RadioGroup } from "@radix-ui/react-radio-group"
 import { RadioGroupItem } from "./ui/radio-group"
+import Link from "next/link"
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -49,7 +50,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         <div className="flex items-center gap-2">
                             <Input
                                 id="name"
-                                placeholder="Digite seu nome"
+                                placeholder="Nome completo"
                                 type="text"
                                 autoCapitalize="none"
                                 autoCorrect="off"
@@ -57,29 +58,34 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             />
 
                             {occupation === "nutricionista" ? (
-                                <Input
-                                    id="nutricionista"
-                                    placeholder="Digite seu CRN"
-                                    type="text"
-                                    autoCapitalize="none"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                />
+                                <abbr className="no-underline" title="Conselho Regional de Nutrição">
+                                    <Input
+                                        id="nutricionista"
+                                        placeholder="CRN"
+
+                                        type="text"
+                                        autoCapitalize="none"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                    />
+                                </abbr>
                             ) : (
-                                <Input
-                                    id="personal-trainer"
-                                    placeholder="Digite seu CREF"
-                                    type="text"
-                                    autoCapitalize="none"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                />
+                                <abbr className="no-underline" title="Conselho Regional de Educação Física">
+                                    <Input
+                                        id="personal-trainer"
+                                        placeholder="CREF"
+                                        type="text"
+                                        autoCapitalize="none"
+                                        autoCorrect="off"
+                                        disabled={isLoading}
+                                    />
+                                </abbr>
                             )}
                         </div>
 
                         <Input
                             id="email"
-                            placeholder="Digite seu e-mail"
+                            placeholder="E-mail"
                             type="email"
                             autoCapitalize="none"
                             autoComplete="email"
@@ -88,7 +94,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         />
                         <Input
                             id="password"
-                            placeholder="Digite sua senha"
+                            placeholder="Senha"
                             type="password"
                             autoCapitalize="none"
                             autoComplete="new-password"
@@ -105,11 +111,23 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             disabled={isLoading}
                         />
                     </div>
-                    <Button disabled={isLoading} className="cursor-pointer">
+                    <Button
+                        disabled={isLoading}
+                        className="cursor-pointer bg-primary-custom hover:bg-green-700 transition-colors duration-100 ease-in text-white"
+                    >
+                        {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+                        Criar
+                    </Button>
+                    <Button
+
+                        variant={"link"}
+                        disabled={isLoading}
+                        className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
                         {isLoading && (
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                         )}
-                        Criar conta
+                        <Link href="/login">Já possuo uma conta</Link>
+
                     </Button>
                 </div>
             </form>
