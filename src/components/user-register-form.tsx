@@ -77,9 +77,6 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             )}
                         </div>
 
-
-
-
                         <Input
                             id="email"
                             placeholder="Digite seu e-mail"
@@ -90,7 +87,6 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             disabled={isLoading}
                         />
                         <Input
-                            className="mt-1"
                             id="password"
                             placeholder="Digite sua senha"
                             type="password"
@@ -100,7 +96,6 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             disabled={isLoading}
                         />
                         <Input
-                            className="mt-1"
                             id="password"
                             placeholder="Confirme sua senha"
                             type="password"
