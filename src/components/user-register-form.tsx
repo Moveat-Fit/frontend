@@ -84,7 +84,8 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                 Router.push('/login');  // Redireciona para a página de login após 2 segundos
             }, 2000);
         } catch (err) {
-            toast.error('Erro ao dacastrar', {
+            console.error("Erro ao se registrar:", err);
+            toast.error('Erro ao se registrar', {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,

@@ -12,6 +12,7 @@ import { Loader } from "lucide-react"
 // import Image from "next/image"
 import Link from "next/link"
 import { useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -26,19 +27,25 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
         e.preventDefault();
         setIsLoading(true);
         setError(null); // Limpar erro ao tentar logar
-    
+
         try {
-          const data: LoginResponse = await loginService({ login, password }); // Chama a função de login
-          localStorage.setItem('authToken', data.token); // Salva o token no localStorage
-          router.push('/dashboard'); // Redireciona após sucesso
-        } catch (err) {
-          setError('Erro ao fazer login, tente novamente'); // Mostra erro no estado
-          console.error('Erro no login', err);
+            const data: LoginResponse = await loginService({ login, password });
+            localStorage.setItem('authToken', data.token);
+            router.push('/dashboard');
+        } catch (error) {
+              toast.error("Erro ao fazer login", {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                        });
         } finally {
-          setIsLoading(false); // Finaliza o estado de carregando
+            setIsLoading(false); // Finaliza o estado de carregando
         }
-        console.log(login)
-        console.log(password)
 
     };
 
@@ -105,6 +112,8 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                     </Button>
                 </div>
             </form>
+            <ToastContainer />
+
         </div>
     )
 }
