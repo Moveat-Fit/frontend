@@ -1,40 +1,111 @@
 "use client"
 
-import * as React from "react"
 
+import { ToastContainer, toast } from 'react-toastify';
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader } from "lucide-react"
-import Google from '@/assets/icons/google.png'
-import Image from "next/image"
-import { RadioGroup } from "@radix-ui/react-radio-group"
+import { registerService, RegisterResponse } from '../services/authService';
+// import Google from '@/assets/icons/google.png'
+// import Image from "next/image"
+import { RadioGroup } from "./ui/radio-group"
 import { RadioGroupItem } from "./ui/radio-group"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import Router from 'next/router';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
 export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps) {
-    const [isLoading, setIsLoading] = React.useState<boolean>(false)
-    const [occupation, setOccupation] = React.useState<string>("nutricionista");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [userType, setUserType] = useState<string>("");
+    const [occupationDocument, setOccupationDocument] = useState<string>("");
+    const [cellphone, setCellphone] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    async function onSubmit(event: React.SyntheticEvent) {
-        event.preventDefault()
-        setIsLoading(true)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
 
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 3000)
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (password !== confirmPassword) {
+            setError("As senhas não coincidem.");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+        setSuccess(null);
+
+        try {
+            // console.log("Enviando os seguintes dados para o serviço de registro:");
+            // console.log("Name:", name);
+            // console.log("Email:", email);
+            // console.log("Password:", password);
+            // console.log("Confirm Password:", confirmPassword);
+            // console.log("Occupation Document:", occupationDocument);
+            // console.log("Cellphone:", cellphone);
+            // console.log("CPF:", cpf);
+            // console.log("User Type:", userType);
+
+            const response: RegisterResponse = await registerService({
+                name,
+                email,
+                password,
+                cellphone,
+                cpf,
+                user_type: userType,
+            });
+
+            console.log("Resposta da API:", response);
+
+            setSuccess("Cadastro realizado com sucesso!");
+
+            setError(null);
+
+            toast.success('Cadastro realizado com sucesso', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            setTimeout(() => {
+                Router.push('/login');  // Redireciona para a página de login após 2 segundos
+            }, 2000);
+        } catch (err) {
+            toast.error('Erro ao dacastrar', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
         <div className={cn("grid gap-6", className)} {...props}>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={handleSubmit}>
                 <div className="grid gap-2">
                     <RadioGroup
-                        onValueChange={setOccupation}
-                        value={occupation}
+                        onValueChange={setUserType}
+                        value={userType}
                         className="flex items-center justify-around mb-4" defaultValue="option-one">
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="nutricionista" id="nutricionista" />
@@ -44,11 +115,13 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             <RadioGroupItem value="personal-trainer" id="personal-trainer" />
                             <Label htmlFor="personal-trainer">Sou Personal Trainer</Label>
                         </div>
-                    </RadioGroup>
 
+                    </RadioGroup>
                     <div className="grid gap-2">
                         <div className="flex items-center gap-2">
                             <Input
+                                value={name}
+                                onChange={e => setName(e.target.value)}
                                 id="name"
                                 placeholder="Nome completo"
                                 type="text"
@@ -57,12 +130,13 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                                 disabled={isLoading}
                             />
 
-                            {occupation === "nutricionista" ? (
+                            {userType === "nutricionista" ? (
                                 <abbr className="no-underline" title="Conselho Regional de Nutrição">
                                     <Input
+                                        value={occupationDocument}
+                                        onChange={e => setOccupationDocument(e.target.value)}
                                         id="nutricionista"
                                         placeholder="CRN"
-
                                         type="text"
                                         autoCapitalize="none"
                                         autoCorrect="off"
@@ -72,6 +146,8 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             ) : (
                                 <abbr className="no-underline" title="Conselho Regional de Educação Física">
                                     <Input
+                                        value={occupationDocument}
+                                        onChange={e => setOccupationDocument(e.target.value)}
                                         id="personal-trainer"
                                         placeholder="CREF"
                                         type="text"
@@ -84,6 +160,18 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         </div>
 
                         <Input
+                            value={cpf}
+                            onChange={e => setCpf(e.target.value)}
+                            id="cpf"
+                            placeholder="CPF"
+                            type="text"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            disabled={isLoading}
+                        />
+                        <Input
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                             id="email"
                             placeholder="E-mail"
                             type="email"
@@ -93,6 +181,18 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             disabled={isLoading}
                         />
                         <Input
+                            value={cellphone}
+                            onChange={e => setCellphone(e.target.value)}
+                            id="cellphone"
+                            placeholder="Telefone"
+                            type="tel"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            disabled={isLoading}
+                        />
+                        <Input
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                             id="password"
                             placeholder="Senha"
                             type="password"
@@ -102,6 +202,8 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             disabled={isLoading}
                         />
                         <Input
+                            value={confirmPassword}
+                            onChange={e => setConfirmPassword(e.target.value)}
                             id="password"
                             placeholder="Confirme sua senha"
                             type="password"
@@ -119,7 +221,6 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         Criar
                     </Button>
                     <Button
-
                         variant={"link"}
                         disabled={isLoading}
                         className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
@@ -127,28 +228,10 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                         )}
                         <Link href="/login">Já possuo uma conta</Link>
-
                     </Button>
                 </div>
             </form>
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                        Ou entre com
-                    </span>
-                </div>
-            </div>
-            <Button className="cursor-pointer" variant="outline" type="button" disabled={isLoading}>
-                {isLoading ? (
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Image src={Google} alt="Google" className="mr-2 h-4 w-4" />
-                )}{" "}
-                Google
-            </Button>
+            <ToastContainer />
         </div>
     )
 }

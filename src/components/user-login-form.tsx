@@ -1,40 +1,59 @@
 "use client"
 
-import * as React from "react"
-
+import { loginService, LoginResponse } from '../services/authService';
+import { useRouter } from 'next/navigation';
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Loader } from "lucide-react"
-import Google from '@/assets/icons/google.png'
-import Image from "next/image"
+// import Google from '@/assets/icons/google.png'
+// import Image from "next/image"
 import Link from "next/link"
+import { useState } from 'react';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
 export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
-    const [isLoading, setIsLoading] = React.useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [error, setError] = useState<string | boolean | null>(false);
+    const [login, setLogin] = useState('');
+    const [password, setPassword] = useState('');
+    const router = useRouter(); // Para redirecionar após o login bem-sucedido
 
-    async function onSubmit(event: React.SyntheticEvent) {
-        event.preventDefault()
-        setIsLoading(true)
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null); // Limpar erro ao tentar logar
+    
+        try {
+          const data: LoginResponse = await loginService({ login, password }); // Chama a função de login
+          localStorage.setItem('authToken', data.token); // Salva o token no localStorage
+          router.push('/dashboard'); // Redireciona após sucesso
+        } catch (err) {
+          setError('Erro ao fazer login, tente novamente'); // Mostra erro no estado
+          console.error('Erro no login', err);
+        } finally {
+          setIsLoading(false); // Finaliza o estado de carregando
+        }
+        console.log(login)
+        console.log(password)
 
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 3000)
-    }
+    };
+
 
     return (
         <div className={cn("grid gap-6", className)} {...props}>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={handleSubmit}>
                 <div className="grid gap-2">
                     <div className="grid gap-1">
                         <Label className="sr-only" htmlFor="email">
                             Email
                         </Label>
                         <Input
+                            value={login}
+                            onChange={(e) => setLogin(e.target.value)}
                             id="email"
                             placeholder="E-mail"
                             type="email"
@@ -44,6 +63,8 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                             disabled={isLoading}
                         />
                         <Input
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             className="mt-2"
                             id="password"
                             placeholder="Senha"
@@ -73,7 +94,7 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                         Entrar
                     </Button>
                     <Button
-
+                        type='submit'
                         variant={"link"}
                         disabled={isLoading}
                         className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
@@ -81,28 +102,28 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                         )}
                         <Link href="/register">Ainda não possuo uma conta</Link>
-
                     </Button>
                 </div>
             </form>
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                        Ou entre com
-                    </span>
-                </div>
-            </div>
-            <Button className="cursor-pointer" variant="outline" type="button" disabled={isLoading}>
-                {isLoading ? (
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Image src={Google} alt="Google" className="mr-2 h-4 w-4" />
-                )}{" "}
-                Google
-            </Button>
         </div>
     )
 }
+
+{/* <div className="relative">
+    <div className="absolute inset-0 flex items-center">
+        <span className="w-full border-t" />
+    </div>
+    <div className="relative flex justify-center text-xs uppercase">
+        <span className="bg-background px-2 text-muted-foreground">
+            Ou entre com
+        </span>
+    </div>
+</div>
+<Button className="cursor-pointer" variant="outline" type="button" disabled={isLoading}>
+    {isLoading ? (
+        <Loader className="mr-2 h-4 w-4 animate-spin" />
+    ) : (
+        <Image src={Google} alt="Google" className="mr-2 h-4 w-4" />
+    )}{" "}
+    Google
+</Button> */}
