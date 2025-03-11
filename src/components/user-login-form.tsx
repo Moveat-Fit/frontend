@@ -33,16 +33,16 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
             localStorage.setItem('authToken', data.token);
             router.push('/dashboard');
         } catch (error) {
-              toast.error("Erro ao fazer login", {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "light",
-                        });
+            toast.error("Erro ao fazer login", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
         } finally {
             setIsLoading(false); // Finaliza o estado de carregando
         }
@@ -100,16 +100,15 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                         {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
                         Entrar
                     </Button>
-                    <Button
-                        type='submit'
-                        variant={"link"}
-                        disabled={isLoading}
-                        className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
-                        {isLoading && (
-                            <Loader className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        <Link href="/register">Ainda não possuo uma conta</Link>
-                    </Button>
+                    <Link href="/register" className='text-center'>
+                        <Button
+                            type='submit'
+                            variant={"link"}
+                            className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
+                            Ainda não possuo uma conta
+                        </Button>
+                    </Link>
+
                 </div>
             </form>
             <ToastContainer />

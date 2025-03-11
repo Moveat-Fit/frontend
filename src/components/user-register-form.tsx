@@ -84,7 +84,6 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                 Router.push('/login');  // Redireciona para a página de login após 2 segundos
             }, 2000);
         } catch (err) {
-            console.error("Erro ao se registrar:", err);
             toast.error('Erro ao se registrar', {
                 position: "top-center",
                 autoClose: 5000,
@@ -107,13 +106,17 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                     <RadioGroup
                         onValueChange={setUserType}
                         value={userType}
-                        className="flex items-center justify-around mb-4" defaultValue="option-one">
+                        className="mx-auto mb-4" defaultValue="Paciente">
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="nutricionista" id="nutricionista" />
+                            <RadioGroupItem value="Paciente" id="paciente" />
+                            <Label htmlFor="paciente">Sou Paciente</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="Nutricionista" id="nutricionista" />
                             <Label htmlFor="nutricionista">Sou Nutricionista</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="personal-trainer" id="personal-trainer" />
+                            <RadioGroupItem value="Personal Trainer" id="personal-trainer" />
                             <Label htmlFor="personal-trainer">Sou Personal Trainer</Label>
                         </div>
 
@@ -131,26 +134,16 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                                 disabled={isLoading}
                             />
 
-                            {userType === "nutricionista" ? (
-                                <abbr className="no-underline" title="Conselho Regional de Nutrição">
+                            {userType !== "Paciente" && (
+                                <abbr
+                                    className="no-underline"
+                                    title={userType === "Nutricionista" ? "Conselho Regional de Nutrição" : "Conselho Regional de Educação Física"}
+                                >
                                     <Input
                                         value={occupationDocument}
                                         onChange={e => setOccupationDocument(e.target.value)}
-                                        id="nutricionista"
-                                        placeholder="CRN"
-                                        type="text"
-                                        autoCapitalize="none"
-                                        autoCorrect="off"
-                                        disabled={isLoading}
-                                    />
-                                </abbr>
-                            ) : (
-                                <abbr className="no-underline" title="Conselho Regional de Educação Física">
-                                    <Input
-                                        value={occupationDocument}
-                                        onChange={e => setOccupationDocument(e.target.value)}
-                                        id="personal-trainer"
-                                        placeholder="CREF"
+                                        id={userType === "Nutricionista" ? "nutricionista" : "personal-trainer"}
+                                        placeholder={userType === "Nutricionista" ? "CRN" : "CREF"}
                                         type="text"
                                         autoCapitalize="none"
                                         autoCorrect="off"
@@ -158,18 +151,9 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                                     />
                                 </abbr>
                             )}
+
                         </div>
 
-                        <Input
-                            value={cpf}
-                            onChange={e => setCpf(e.target.value)}
-                            id="cpf"
-                            placeholder="CPF"
-                            type="text"
-                            autoCapitalize="none"
-                            autoCorrect="off"
-                            disabled={isLoading}
-                        />
                         <Input
                             value={email}
                             onChange={e => setEmail(e.target.value)}
@@ -181,16 +165,28 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             autoCorrect="off"
                             disabled={isLoading}
                         />
-                        <Input
-                            value={cellphone}
-                            onChange={e => setCellphone(e.target.value)}
-                            id="cellphone"
-                            placeholder="Telefone"
-                            type="tel"
-                            autoCapitalize="none"
-                            autoCorrect="off"
-                            disabled={isLoading}
-                        />
+                        <div className="flex gap-2">
+                            <Input
+                                value={cpf}
+                                onChange={e => setCpf(e.target.value)}
+                                id="cpf"
+                                placeholder="CPF"
+                                type="text"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                disabled={isLoading}
+                            />
+                            <Input
+                                value={cellphone}
+                                onChange={e => setCellphone(e.target.value)}
+                                id="cellphone"
+                                placeholder="Telefone"
+                                type="tel"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                disabled={isLoading}
+                            />
+                        </div>
                         <Input
                             value={password}
                             onChange={e => setPassword(e.target.value)}
@@ -221,15 +217,14 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
                         Criar
                     </Button>
-                    <Button
-                        variant={"link"}
-                        disabled={isLoading}
-                        className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
-                        {isLoading && (
-                            <Loader className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        <Link href="/login">Já possuo uma conta</Link>
-                    </Button>
+                    <Link href="/login" className='text-center'>
+                        <Button
+                            variant={"link"}
+                            className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
+                            Já possuo uma conta
+                        </Button>
+                    </Link>
+
                 </div>
             </form>
             <ToastContainer />
