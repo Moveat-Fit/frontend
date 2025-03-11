@@ -13,8 +13,9 @@ import { registerService, RegisterResponse } from '../services/authService';
 import { RadioGroup } from "./ui/radio-group"
 import { RadioGroupItem } from "./ui/radio-group"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Router from 'next/router';
+import { Checkbox } from './ui/checkbox';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -22,7 +23,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [cpf, setCpf] = useState("");
-    const [userType, setUserType] = useState<string>("");
+    const [userType, setUserType] = useState<string>("Paciente");
     const [occupationDocument, setOccupationDocument] = useState<string>("");
     const [cellphone, setCellphone] = useState("");
     const [password, setPassword] = useState("");
@@ -106,17 +107,17 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                     <RadioGroup
                         onValueChange={setUserType}
                         value={userType}
-                        className="mx-auto mb-4" defaultValue="Paciente">
+                        className="text-center mb-4" defaultValue="Paciente">
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="Paciente" id="paciente" />
+                            <Checkbox value="Paciente" id="paciente" />
                             <Label htmlFor="paciente">Sou Paciente</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="Nutricionista" id="nutricionista" />
+                            <Checkbox value="Nutricionista" id="nutricionista" />
                             <Label htmlFor="nutricionista">Sou Nutricionista</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="Personal Trainer" id="personal-trainer" />
+                            <Checkbox value="Personal Trainer" id="personal-trainer" />
                             <Label htmlFor="personal-trainer">Sou Personal Trainer</Label>
                         </div>
 
