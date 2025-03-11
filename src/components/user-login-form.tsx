@@ -104,7 +104,7 @@ export function UserLoginAuthForm({ className, ...props }: UserAuthFormProps) {
                         <Button
                             type='submit'
                             variant={"link"}
-                            className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
+                            className="p-6 cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
                             Ainda não possuo uma conta
                         </Button>
                     </Link>

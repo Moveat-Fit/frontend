@@ -221,7 +221,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                     <Link href="/login" className='text-center'>
                         <Button
                             variant={"link"}
-                            className="cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
+                            className="p-6 cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in">
                             Já possuo uma conta
                         </Button>
                     </Link>
