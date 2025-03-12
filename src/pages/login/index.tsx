@@ -1,7 +1,7 @@
 import '../../app/globals.css'
 import { Metadata } from "next"
 
-import { UserLoginAuthForm } from "@/components/user-login-form"
+import { UserLoginAuthForm } from "@/components/AuthenticationForm/user-login-form"
 import SectionSideLogin from '@/pages/login/section-side-login'
 
 export const metadata: Metadata = {

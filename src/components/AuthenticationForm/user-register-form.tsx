@@ -7,15 +7,15 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader } from "lucide-react"
-import { registerService, RegisterResponse } from '../services/authService';
+import { registerService, RegisterResponse } from '../../services/authService';
 // import Google from '@/assets/icons/google.png'
 // import Image from "next/image"
-import { RadioGroup } from "./ui/radio-group"
-import { RadioGroupItem } from "./ui/radio-group"
+import { RadioGroup } from "../ui/radio-group"
+import { RadioGroupItem } from "../ui/radio-group"
 import Link from "next/link"
 import { useState } from "react"
 import Router from 'next/router';
-import { Checkbox } from './ui/checkbox';
+import { Checkbox } from '../ui/checkbox';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 

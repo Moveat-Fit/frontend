@@ -1,6 +1,6 @@
 import '../../app/globals.css'
 import { Metadata } from "next"
-import { UserRegisterAuthForm } from "@/components/user-register-form"
+import { UserRegisterAuthForm } from "@/components/AuthenticationForm/user-register-form"
 import SectionSideRegister from '@/pages/register/section-side-register'
 
 export const metadata: Metadata = {
