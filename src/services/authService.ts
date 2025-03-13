@@ -67,7 +67,7 @@ export const registerService = async (userData: RegisterProps): Promise<Register
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error('Erro na requisição:', error.response?.data || error.message);
-            throw new Error('Erro ao cadastrar usuário: ' + error.response?.data.message || 'Erro desconhecido');
+            throw new Error(error.response?.data.message || 'Erro desconhecido');
         } else {
             console.error('Erro desconhecido', error);
             throw new Error('Erro desconhecido');

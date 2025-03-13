@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 
@@ -8,14 +9,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader } from "lucide-react"
 import { registerService, RegisterResponse } from '../../services/authService';
-// import Google from '@/assets/icons/google.png'
-// import Image from "next/image"
-import { RadioGroup } from "../ui/radio-group"
-import { RadioGroupItem } from "../ui/radio-group"
 import Link from "next/link"
 import { useState } from "react"
 import Router from 'next/router';
 import { Checkbox } from '../ui/checkbox';
+import ToastError from '../ToastError';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -27,35 +25,21 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
     const [occupationDocument, setOccupationDocument] = useState<string>("");
     const [cellphone, setCellphone] = useState("");
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSelect = (value: string) => setUserType(value);
 
-        if (password !== confirmPassword) {
-            setError("As senhas não coincidem.");
-            return;
-        }
+    const onSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
         setIsLoading(true);
         setError(null);
         setSuccess(null);
 
         try {
-            // console.log("Enviando os seguintes dados para o serviço de registro:");
-            // console.log("Name:", name);
-            // console.log("Email:", email);
-            // console.log("Password:", password);
-            // console.log("Confirm Password:", confirmPassword);
-            // console.log("Occupation Document:", occupationDocument);
-            // console.log("Cellphone:", cellphone);
-            // console.log("CPF:", cpf);
-            // console.log("User Type:", userType);
-
             const response: RegisterResponse = await registerService({
                 name,
                 email,
@@ -64,12 +48,8 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                 cpf,
                 user_type: userType,
             });
-
-            console.log("Resposta da API:", response);
-
             setSuccess("Cadastro realizado com sucesso!");
 
-            setError(null);
 
             toast.success('Cadastro realizado com sucesso', {
                 position: "top-center",
@@ -81,20 +61,22 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                 progress: undefined,
                 theme: "light",
             });
+
             setTimeout(() => {
-                Router.push('/login');  // Redireciona para a página de login após 2 segundos
+                Router.push('/login');
             }, 2000);
-        } catch (err) {
-            toast.error('Erro ao se registrar', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-            });
+
+            setError(null);
+        } catch (error: any) {
+            let errorMessage = "Erro desconhecido";
+
+            if (error?.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error?.message) {
+                errorMessage = error.message;
+            }
+
+            ToastError({ message: errorMessage });
         } finally {
             setIsLoading(false);
         }
@@ -102,29 +84,28 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
 
     return (
         <div className={cn("grid gap-6", className)} {...props}>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={onSubmit}>
                 <div className="grid gap-2">
-                    <RadioGroup
-                        onValueChange={setUserType}
-                        value={userType}
-                        className="text-center mb-4" defaultValue="Paciente">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox value="Paciente" id="paciente" />
-                            <Label htmlFor="paciente">Sou Paciente</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox value="Nutricionista" id="nutricionista" />
-                            <Label htmlFor="nutricionista">Sou Nutricionista</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Checkbox value="Personal Trainer" id="personal-trainer" />
-                            <Label htmlFor="personal-trainer">Sou Personal Trainer</Label>
-                        </div>
-
-                    </RadioGroup>
+                    <div className="text-center mb-4 space-y-2">
+                        {[
+                            { label: "Sou Paciente", value: "Paciente" },
+                            { label: "Sou Nutricionista", value: "Nutricionista" },
+                            { label: "Sou Personal Trainer", value: "Personal Trainer" },
+                        ].map((item) => (
+                            <div key={item.value} className="flex items-center space-x-2">
+                                <Checkbox
+                                    id={item.value}
+                                    checked={userType === item.value}
+                                    onCheckedChange={() => handleSelect(item.value)}
+                                />
+                                <Label htmlFor={item.value}>{item.label}</Label>
+                            </div>
+                        ))}
+                    </div>
                     <div className="grid gap-2">
                         <div className="flex items-center gap-2">
                             <Input
+                                required
                                 value={name}
                                 onChange={e => setName(e.target.value)}
                                 id="name"
@@ -141,6 +122,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                                     title={userType === "Nutricionista" ? "Conselho Regional de Nutrição" : "Conselho Regional de Educação Física"}
                                 >
                                     <Input
+                                        required
                                         value={occupationDocument}
                                         onChange={e => setOccupationDocument(e.target.value)}
                                         id={userType === "Nutricionista" ? "nutricionista" : "personal-trainer"}
@@ -156,6 +138,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         </div>
 
                         <Input
+                            required
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             id="email"
@@ -168,6 +151,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                         />
                         <div className="flex gap-2">
                             <Input
+                                required
                                 value={cpf}
                                 onChange={e => setCpf(e.target.value)}
                                 id="cpf"
@@ -178,6 +162,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                                 disabled={isLoading}
                             />
                             <Input
+                                required
                                 value={cellphone}
                                 onChange={e => setCellphone(e.target.value)}
                                 id="cellphone"
@@ -189,21 +174,11 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             />
                         </div>
                         <Input
+                            required
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             id="password"
                             placeholder="Senha"
-                            type="password"
-                            autoCapitalize="none"
-                            autoComplete="new-password"
-                            autoCorrect="off"
-                            disabled={isLoading}
-                        />
-                        <Input
-                            value={confirmPassword}
-                            onChange={e => setConfirmPassword(e.target.value)}
-                            id="password"
-                            placeholder="Confirme sua senha"
                             type="password"
                             autoCapitalize="none"
                             autoComplete="new-password"
@@ -225,7 +200,6 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             Já possuo uma conta
                         </Button>
                     </Link>
-
                 </div>
             </form>
             <ToastContainer />
