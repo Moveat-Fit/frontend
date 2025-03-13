@@ -30,6 +30,38 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
+    const formatCPF = (value: string) => {
+        // Remove tudo que não for número
+        const cleaned = value.replace(/\D/g, "");
+
+        // Aplica a máscara: 000.000.000-00
+        return cleaned
+            .replace(/^(\d{3})(\d)/, "$1.$2")
+            .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+            .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4")
+            .slice(0, 14); // Garante o tamanho correto
+    };
+
+    const formatPhone = (value: string) => {
+        // Remove tudo que não for número
+        const cleaned = value.replace(/\D/g, "");
+
+        // Aplica a máscara para telefone: (00) 00000-0000
+        return cleaned
+            .replace(/(\d{2})(\d)/, "($1) $2") // Adiciona o DDD com parênteses
+            .replace(/(\d)(\d{4})$/, "$1-$2") // Adiciona o hífen após o 5º dígito
+            .slice(0, 15); // Garante que o número não ultrapasse 15 caracteres
+    };
+
+    const handleChangeCellphone = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setCellphone(formatPhone(event.target.value));
+    };
+
+
+    const handleChangeCPF = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setCpf(formatCPF(event.target.value));
+    };
+
     const handleSelect = (value: string) => setUserType(value);
 
     const onSubmit = async (e: React.FormEvent) => {
@@ -38,6 +70,18 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
         setIsLoading(true);
         setError(null);
         setSuccess(null);
+
+        if (cpf.length < 14) {
+            ToastError({ message: "CPF inválido" });
+            setIsLoading(false);
+            return;
+        }
+
+        if (cellphone.length < 15) {
+            ToastError({ message: "Telefone inválido" });
+            setIsLoading(false);
+            return;
+        }
 
         try {
             const response: RegisterResponse = await registerService({
@@ -153,7 +197,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             <Input
                                 required
                                 value={cpf}
-                                onChange={e => setCpf(e.target.value)}
+                                onChange={handleChangeCPF}
                                 id="cpf"
                                 placeholder="CPF"
                                 type="text"
@@ -164,7 +208,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             <Input
                                 required
                                 value={cellphone}
-                                onChange={e => setCellphone(e.target.value)}
+                                onChange={handleChangeCellphone}
                                 id="cellphone"
                                 placeholder="Telefone"
                                 type="tel"
