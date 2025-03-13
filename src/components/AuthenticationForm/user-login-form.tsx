@@ -163,7 +163,7 @@ export function UserLoginAuthForm({ className, ...props }: React.HTMLAttributes<
                         </div>
                     </div>
 
-                    <Button className="cursor-pointer" variant="outline" type="button" disabled={isLoading}>
+                    <Button className="cursor-pointer" variant="outline" type="button">
                         {isLoading ? (
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                         ) : (

@@ -38,7 +38,7 @@ export const loginService = async (credentials: { login: string; password: strin
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error('Erro na requisição:', error.response?.data || error.message);
-            throw new Error('Erro ao fazer login: ' + error.response?.data.message || 'Erro desconhecido');
+            throw new Error(error.response?.data.message || 'Erro desconhecido');
         } else {
             console.error('Erro desconhecido', error);
             throw new Error('Erro desconhecido');
