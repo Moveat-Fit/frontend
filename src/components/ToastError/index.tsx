@@ -6,13 +6,11 @@ interface ToastErrorProps {
 
 const ToastError = ({ message }: ToastErrorProps) => {
     toast.error(message, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: true,
         closeOnClick: true,
-        pauseOnHover: true,
         draggable: true,
-        progress: undefined,
         theme: "light",
     });
 
