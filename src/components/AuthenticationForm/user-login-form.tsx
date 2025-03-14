@@ -25,7 +25,7 @@ interface LoginFormData {
     password: string;
 }
 
-export function UserLoginAuthForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => {
     const { handleSubmit, control, formState: { errors }, setError, clearErrors } = useForm<LoginFormData>({
         mode: "onSubmit",
     });
@@ -86,7 +86,7 @@ export function UserLoginAuthForm({ className, ...props }: React.HTMLAttributes<
                                         handleChange("login");
                                     }}
                                     id="login"
-                                    type="text"
+                                    type="email"
                                     placeholder="E-mail"
                                     autoCapitalize="none"
                                     autoCorrect="off"
@@ -167,7 +167,7 @@ export function UserLoginAuthForm({ className, ...props }: React.HTMLAttributes<
                         {isLoading ? (
                             <Loader className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
-                            <Image src={Google} alt="Google" className="mr-2 h-4 w-4" />
+                            <Image src={Google} alt="Google Logo" className="mr-2 h-4 w-4" />
                         )}
                         Google
                     </Button>

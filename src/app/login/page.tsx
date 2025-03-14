@@ -2,14 +2,12 @@ import '../../app/globals.css'
 import { Metadata } from "next"
 
 import { UserLoginAuthForm } from "@/components/AuthenticationForm/user-login-form"
-import SectionSideLogin from '@/pages/login/section-side-login'
+import SectionSideLogin from '@/app/login/section-side-login'
 
 export const metadata: Metadata = {
   title: "Página de Login",
   description: "Página de login do Moveat.",
 }
-
-
 export default function Login() {
   return (
     <main className='h-screen flex'>

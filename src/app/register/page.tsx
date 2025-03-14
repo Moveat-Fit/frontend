@@ -1,11 +1,11 @@
 import '../../app/globals.css'
 import { Metadata } from "next"
 import { UserRegisterAuthForm } from "@/components/AuthenticationForm/user-register-form"
-import SectionSideRegister from '@/pages/register/section-side-register'
+import SectionSideRegister from '@/app/register/section-side-register'
 
 export const metadata: Metadata = {
-  title: "Authentication",
-  description: "Authentication forms built using the components.",
+  title: "Página de Cadastro",
+  description: "Página de cadastro do Moveat.",
 }
 
 export default function Register() {

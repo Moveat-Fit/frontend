@@ -14,8 +14,7 @@
 
 
 @theme {
-  --color-primary-custom: #58BD63;
-  
+  --color-primary-custom: #006633;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

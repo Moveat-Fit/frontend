@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader } from "lucide-react"
-import { registerService, RegisterResponse } from '../../services/authService';
+import { registerService } from '../../services/authService';
 import Link from "next/link"
 import { useState } from "react"
 import Router from 'next/router';
@@ -84,7 +85,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
         }
 
         try {
-            const response: RegisterResponse = await registerService({
+            await registerService({
                 name,
                 email,
                 password,
