@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 }
 export default function Login() {
   return (
-    <main className='h-screen flex'>
-      <div className='w-1/2 h-full items-center justify-center flex'>
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+    <main className='h-screen block lg:flex bg-white'>
+      <div className='bg-white lg:mt-0 w-full h-screen lg:w-1/2 lg:h-full items-center justify-center flex'>
+        <div className="mx-auto flex flex-col justify-center space-y-6 w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight text-primary-custom">
               Bem vindo de volta.

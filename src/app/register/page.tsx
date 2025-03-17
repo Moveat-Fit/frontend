@@ -12,8 +12,8 @@ export default function Register() {
   return (
     <main className='h-screen flex'>
       <SectionSideRegister />
-      <div className='flex items-center justify-center w-1/2'>
-        <div className="space-y-6 sm:w-[350px]">
+      <div className='flex items-center justify-center w-full lg:w-1/2'>
+        <div className="space-y-6 w-[350px]">
           <div className="space-y-2 text-center">
             <h1 className="text-2xl font-semibold text-primary-custom tracking-tight">
               Criar uma conta

@@ -295,9 +295,9 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                             </Button>
                         </div>
 
-                        <div className='mt-2 space-y-2'>
+                        <div className='space-y-2'>
                             {criteria.map(({ text, test }, index) => (
-                                <p key={index} className="flex items-center gap-2 text-sm">
+                                <p key={index} className="mt-3 flex items-center gap-2 text-sm">
                                     {test(password) ? (
                                         <CheckCircle2 className="text-primary-custom" size={16} />
                                     ) : (
@@ -307,7 +307,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                                 </p>
 
                             ))}
-                            <p className="flex items-center gap-2 text-sm ">
+                            <p className="mt-3 flex items-center gap-2 text-sm ">
                                 {password && confirmPassword && password === confirmPassword ? (
                                     <CheckCircle2 className="text-primary-custom" size={16} />
                                 ) : (
@@ -321,7 +321,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                     <Button
                         onClick={handleSubmit}
                         disabled={!allValid}
-                        className="cursor-pointer bg-primary-custom hover:bg-green-700 transition-colors duration-100 ease-in text-white"
+                        className="mt-4 cursor-pointer bg-primary-custom hover:bg-green-700 transition-colors duration-100 ease-in text-white"
                     >
                         {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
                         Criar
