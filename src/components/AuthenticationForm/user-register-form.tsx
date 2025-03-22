@@ -23,7 +23,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [cpf, setCpf] = useState("");
-    const [userType, setUserType] = useState<string>("Paciente");
+    const [userType, setUserType] = useState<string>("Nutricionista");
     const [occupationDocument, setOccupationDocument] = useState<string>("");
     const [cellphone, setCellphone] = useState("");
     const [password, setPassword] = useState("");
@@ -161,7 +161,6 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                 <div className="grid gap-2">
                     <div className="text-center mb-4 space-y-2">
                         {[
-                            { label: "Sou Paciente", value: "Paciente" },
                             { label: "Sou Nutricionista", value: "Nutricionista" },
                             { label: "Sou Personal Trainer", value: "Personal Trainer" },
                         ].map((item) => (
