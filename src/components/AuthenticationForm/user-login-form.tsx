@@ -18,6 +18,7 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import ToastError from "../ToastError";
 import ToastSuccess from "../ToastSuccess";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 
 
 interface LoginFormData {
@@ -53,7 +54,7 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
 
         } catch (error: any) {
             setIsLoading(false);
-            let errorMessage = "Erro desconhecido"; 
+            let errorMessage = "Erro desconhecido";
 
             if (error?.response?.data?.message) {
                 errorMessage = error.response.data.message;
@@ -69,6 +70,13 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
         <div className={cn("grid gap-6", className)} {...props}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid gap-2">
+                    <Tabs defaultValue="account" className="border border-primary-custom rounded-lg">
+                        <TabsList>
+                            <TabsTrigger className="cursor-pointer" value="account">Paciente</TabsTrigger>
+                            <TabsTrigger className="cursor-pointer" value="password">Profissional</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+
                     <div className="grid gap-1">
                         <Label className="sr-only" htmlFor="email">
                             Email
