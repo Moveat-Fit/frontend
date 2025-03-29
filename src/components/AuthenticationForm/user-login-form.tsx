@@ -3,7 +3,7 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { loginService, LoginResponse } from "../../services/authService";
+import { professionalLoginService, LoginResponse } from "../../services/authService";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -33,6 +33,8 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [selectedTab, setSelectedTab] = useState("patient");
+
     const router = useRouter();
 
     const handleChange = (field: keyof LoginFormData) => {
@@ -45,7 +47,7 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
         try {
             setIsLoading(true);
 
-            const response: LoginResponse = await loginService(data);
+            const response: LoginResponse = await professionalLoginService(data);
 
             localStorage.setItem("authToken", response.token);
 
@@ -70,10 +72,10 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
         <div className={cn("grid gap-6", className)} {...props}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid gap-2">
-                    <Tabs defaultValue="account" className="border border-primary-custom rounded-lg">
+                    <Tabs value={selectedTab} onValueChange={setSelectedTab} defaultValue="patient" className="border border-primary-custom rounded-lg">
                         <TabsList>
-                            <TabsTrigger className="cursor-pointer" value="account">Paciente</TabsTrigger>
-                            <TabsTrigger className="cursor-pointer" value="password">Profissional</TabsTrigger>
+                            <TabsTrigger className="cursor-pointer" value="patient">Paciente</TabsTrigger>
+                            <TabsTrigger className="cursor-pointer" value="professional">Profissional</TabsTrigger>
                         </TabsList>
                     </Tabs>
 
@@ -150,35 +152,40 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                         Entrar
                     </Button>
 
-                    <Link href="/register" className="text-center">
-                        <Button
-                            type="submit"
-                            variant={"link"}
-                            className="p-6 cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in"
-                        >
-                            Ainda não possuo uma conta
-                        </Button>
-                    </Link>
+                    {selectedTab === "professional" && (
+                        <>
+                            <Link href="/register" className="text-center">
+                                <Button
+                                    type="submit"
+                                    variant={"link"}
+                                    className="p-6 cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in"
+                                >
+                                    Ainda não possuo uma conta
+                                </Button>
+                            </Link>
 
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">
-                                Ou entre com
-                            </span>
-                        </div>
-                    </div>
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-background px-2 text-muted-foreground">
+                                        Ou entre com
+                                    </span>
+                                </div>
+                            </div>
 
-                    <Button className="cursor-pointer" variant="outline" type="button">
-                        {isLoading ? (
-                            <Loader className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Image src={Google} alt="Google Logo" className="mr-2 h-4 w-4" />
-                        )}
-                        Google
-                    </Button>
+                            <Button className="cursor-pointer" variant="outline" type="button">
+                                {isLoading ? (
+                                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Image src={Google} alt="Google Logo" className="mr-2 h-4 w-4" />
+                                )}
+                                Google
+                            </Button>
+                        </>
+                    )}
+
                 </div>
             </form>
             <ToastContainer />

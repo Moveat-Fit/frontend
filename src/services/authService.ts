@@ -2,16 +2,14 @@ import axios from 'axios';
 
 const URL_BASE = 'http://127.0.0.1:5000';
 
-// Definir o tipo de dados que a API retorna (supondo que seja algo como um token)
 export interface RegisterProps {
-    name: string,
+    full_name: string,
     email: string,
     password: string,
-    //confirmPassword: string,
-    //occupationDocument: string,
     cpf: string,
-    cellphone: string,
-    user_type: string
+    phone: string,
+    regional_council_type: string
+    regional_council: string
 }
 
 export interface LoginResponse {
@@ -22,10 +20,10 @@ export interface RegisterResponse {
     message: string; // Mensagem de sucesso ou erro (ajuste conforme a resposta da sua API)
 }
 
-export const loginService = async (credentials: { login: string; password: string }): Promise<LoginResponse> => {
+export const professionalLoginService = async (credentials: { login: string; password: string }): Promise<LoginResponse> => {
     console.log(credentials)
     try {
-        const response = await axios.post(URL_BASE + "/login", {
+        const response = await axios.post(URL_BASE + "/professional", {
             login: credentials.login,
             password: credentials.password,
         }, {
@@ -47,16 +45,17 @@ export const loginService = async (credentials: { login: string; password: strin
 };
 
 
-export const registerService = async (userData: RegisterProps): Promise<RegisterResponse> => {
+export const professionalRegisterService = async (userData: RegisterProps): Promise<RegisterResponse> => {
     console.log(userData)
     try {
         const response = await axios.post(URL_BASE + "/register", {
-            name: userData.name,
+            full_name: userData.full_name,
             email: userData.email,
             password: userData.password,
             cpf: userData.cpf,
-            cellphone: userData.cellphone,
-            user_type: userData.user_type
+            phone: userData.phone,
+            regional_council_type: userData.regional_council_type,
+            regional_council: userData.regional_council
         }, {
             headers: {
                 'Content-Type': 'application/json',

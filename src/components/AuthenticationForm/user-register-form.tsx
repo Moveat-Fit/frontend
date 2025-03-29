@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, CheckCircle2, Eye, EyeOff, Loader, XCircle } from "lucide-react"
-import { registerService } from '../../services/authService';
+import { professionalRegisterService } from '../../services/authService';
 import Link from "next/link"
 import { use, useEffect, useState } from "react"
 import Router from 'next/router';
@@ -113,14 +113,17 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
         setError(null);
         setSuccess(null);
 
+        const cpfWithoutMask = cpf.replace(/\D/g, "");
+        const cellphoneWithoutMask = cellphone.replace(/\D/g, "");
         try {
-            await registerService({
-                name,
+            await professionalRegisterService({
+                full_name: name,
                 email,
                 password,
-                cellphone,
-                cpf,
-                user_type: userType,
+                cpf: cpfWithoutMask,
+                phone: cellphoneWithoutMask,
+                regional_council_type: userType,
+                regional_council: occupationDocument
             });
             setSuccess("Cadastro realizado com sucesso!");
 
@@ -152,6 +155,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
             ToastError({ message: errorMessage });
         } finally {
             setIsLoading(false);
+            console.log(cpf)
         }
     }
 
