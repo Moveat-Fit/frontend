@@ -13,7 +13,7 @@ export interface RegisterProps {
 }
 
 export interface LoginResponse {
-    token: string; // Defina conforme a estrutura de sua resposta
+    access_token: string; // Defina conforme a estrutura de sua resposta
 }
 
 export interface RegisterResponse {
@@ -24,6 +24,30 @@ export const professionalLoginService = async (credentials: { login: string; pas
     console.log(credentials)
     try {
         const response = await axios.post(URL_BASE + "/professional", {
+            login: credentials.login,
+            password: credentials.password,
+        }, {
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Erro na requisição:', error.response?.data || error.message);
+            throw new Error(error.response?.data.message || 'Erro desconhecido');
+        } else {
+            console.error('Erro desconhecido', error);
+            throw new Error('Erro desconhecido');
+        }
+    }
+};
+
+export const patientlLoginService = async (credentials: { login: string; password: string }): Promise<LoginResponse> => {
+    console.log(credentials)
+    try {
+        const response = await axios.post(URL_BASE + "/patient", {
             login: credentials.login,
             password: credentials.password,
         }, {

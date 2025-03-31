@@ -3,7 +3,7 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { professionalLoginService, LoginResponse } from "../../services/authService";
+import { professionalLoginService, LoginResponse, patientlLoginService } from "../../services/authService";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,7 @@ import { ToastContainer, toast } from "react-toastify";
 import ToastError from "../ToastError";
 import ToastSuccess from "../ToastSuccess";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { table } from "console";
 
 
 interface LoginFormData {
@@ -47,12 +48,22 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
         try {
             setIsLoading(true);
 
-            const response: LoginResponse = await professionalLoginService(data);
+            console.log("Dados do formulário:", selectedTab);
 
-            localStorage.setItem("authToken", response.token);
+            if(selectedTab === "patient") {
+                console.log("Paciente")
+                const response: LoginResponse = await patientlLoginService(data);
+                localStorage.setItem("access_token", response.access_token);
+                console.log(response)
+            } else if(selectedTab === "professional") {
+                console.log("Profissional")
+                const response: LoginResponse = await professionalLoginService(data);
+                localStorage.setItem("access_token", response.access_token);
+                console.log(response)
+            }
 
             // ToastSuccess({ message: "Login efetuado com sucesso" });
-            router.push("/dashboard");
+            router.push(`/dashboard/${selectedTab}`);
 
         } catch (error: any) {
             setIsLoading(false);
@@ -65,6 +76,8 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
             }
 
             ToastError({ message: errorMessage });
+        } finally {
+            setIsLoading(false);
         }
     };
 
