@@ -1,14 +1,65 @@
-import { Metadata } from "next";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { User, UserPlus } from "lucide-react";
+import Link from "next/link";
+export default function DashboardPage() {
+    return (
+        <>
+            <div>
+                <h2 className="text-xl font-bold">Olá, Natã</h2>
+                <p className="text-muted-foreground">Gerencie seus pacientes e registros de forma eficiente.</p>
+            </div>
 
-export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Dashboard do Moveat.",
-}
-
-export default function Dashboard() {
-  return (
-    <div>
-      <h1>Logou</h1>
-    </div>
-  );
+            <div className="flex flex-1 flex-col gap-4 pt-0">
+                <div className="grid auto-rows-min gap-4 md:grid-cols-3 max-w-300">
+                    <div className="aspect-video rounded-xl bg-muted/50">
+                        <Card>
+                            <CardContent>
+                                <div className="flex flex-col items-center text-center space-y-3">
+                                    <div className="bg-primary/10 p-3 rounded-full">
+                                        <UserPlus className="h-8 w-8 text-primary" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-medium">
+                                            Crie um novo registro de paciente com informações médicas e de contato
+                                        </h3>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex justify-center pb-6">
+                                <Link href="/dashboard/professional/new-patient" className="text-primary">
+                                    <Button className="w-full cursor-pointer">
+                                        Cadastrar novo paciente
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                    <div className="aspect-video rounded-xl bg-muted/50">
+                        <Card>
+                            <CardContent>
+                                <div className="flex flex-col items-center text-center space-y-3">
+                                    <div className="bg-primary/10 p-3 rounded-full">
+                                        <User className="h-8 w-8 text-primary" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-medium">
+                                            Veja todas as informações médicas e de contato de seus pacientes
+                                        </h3>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex justify-center pb-6">
+                                <Link href="/dashboard/professional/all-patients">
+                                    <Button className="w-full cursor-pointer">
+                                        Ver todos os pacientes
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    </div>
+                </div>
+            </div >
+        </>
+    );
 }

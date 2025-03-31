@@ -63,7 +63,7 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
             }
 
             // ToastSuccess({ message: "Login efetuado com sucesso" });
-            router.push(`/dashboard/${selectedTab}`);
+            router.push(`/dashboard`);
 
         } catch (error: any) {
             setIsLoading(false);
