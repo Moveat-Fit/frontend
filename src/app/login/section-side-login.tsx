@@ -1,7 +1,20 @@
+"use client";
+
 import Image from "next/image";
 import MyIcon from '@/assets/undraw_authentication_tbfc.svg';
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { showToastDefault } from "@/utils/toast";
 
 export default function SectionSide() {
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+      if (searchParams.get("expired") === "true") {
+        showToastDefault("Sua sessão expirou. Faça login novamente.");
+      }
+    }, [searchParams]);
+
     return (
         <div className='hidden lg:block bg-primary-custom rounded-tl-[40%] lg:w-1/2'>
             <div className='flex flex-col justify-between text-right h-full text-white'>

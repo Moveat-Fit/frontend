@@ -5,9 +5,9 @@ import Link from "next/link";
 export default function DashboardPage() {
     return (
         <>
-            <div>
-                <h2 className="text-xl font-bold">Olá, Natã</h2>
-                <p className="text-muted-foreground">Gerencie seus pacientes e registros de forma eficiente.</p>
+            <div className="pb-3">
+                <h1 className="text-3xl font-bold text-primary-custom">Olá, Carol</h1>
+                <h2 className="text-muted-foreground">Gerencie seus pacientes e registros de forma eficiente.</h2>
             </div>
 
             <div className="flex flex-1 flex-col gap-4 pt-0">
@@ -28,7 +28,7 @@ export default function DashboardPage() {
                             </CardContent>
                             <CardFooter className="flex justify-center pb-6">
                                 <Link href="/dashboard/professional/new-patient" className="text-primary">
-                                    <Button className="w-full cursor-pointer">
+                                    <Button variant={"primary"} className="w-full cursor-pointer">
                                         Cadastrar novo paciente
                                     </Button>
                                 </Link>
@@ -51,7 +51,7 @@ export default function DashboardPage() {
                             </CardContent>
                             <CardFooter className="flex justify-center pb-6">
                                 <Link href="/dashboard/professional/all-patients">
-                                    <Button className="w-full cursor-pointer">
+                                    <Button variant={"primary"} className="w-full cursor-pointer">
                                         Ver todos os pacientes
                                     </Button>
                                 </Link>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
@@ -11,53 +12,94 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import ToastSuccess from "@/components/ToastSuccess";
+import { CalendarIcon, Eye, EyeOff, WandSparkles } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
+import { professionalRegisterNewPatientService, RegisterPatientProps } from "@/services/authService";
+import { mask, unmask } from "remask";
+import { showToastError, showToastSuccess } from "@/utils/toast";
+import Link from "next/link";
 
+
+const formSchema = z.object({
+    firstName: z.string().min(2, {
+        message: "Nome deve ter pelo menos 2 caracteres.",
+    }),
+    lastName: z.string().min(2, {
+        message: "Sobrenome deve ter pelo menos 2 caracteres.",
+    }),
+    dateOfBirth: z.date({
+        required_error: "Data de nascimento é obrigatória.",
+    }),
+    gender: z.string({
+        required_error: "Gênero é obrigatório.",
+    }),
+    email: z.string().email({
+        message: "Email inválido.",
+    }),
+    password: z.string().min(8, {
+        message: "Senha deve ter pelo menos 8 caracteres, incluindo letras, números e acentos.",
+    }),
+    phone: z.string().length(11, {
+        message: "Telefone deve ter 11 dígitos.",
+    }),
+    cpf: z.string().length(11, {
+        message: "CPF deve ter 11 dígitos.",
+    }),
+    weight: z.string().refine(val => /^\d{1,3}(\.\d)?$/.test(val), {
+        message: "Peso inválido. Ex: 80.5"
+    }),
+    height: z.string().refine(val => /^\d\.\d{2}$/.test(val), {
+        message: "Altura inválida. Ex: 1.75"
+    }),
+
+    observations: z.string().optional(),
+})
+
+const genders = [
+    { label: "Masculino", value: "M" },
+    { label: "Feminino", value: "F" },
+    { label: "Não binário", value: "NB" },
+    { label: "Outro", value: "N/S" },
+]
 
 export default function NewPatient() {
+
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
 
-    const formSchema = z.object({
-        firstName: z.string().min(2, {
-            message: "Nome deve ter pelo menos 2 caracteres.",
-        }),
-        lastName: z.string().min(2, {
-            message: "Sobrenome deve ter pelo menos 2 caracteres.",
-        }),
-        dateOfBirth: z.date({
-            required_error: "Data de nascimento é obrigatória.",
-        }),
-        gender: z.string({
-            required_error: "Gênero é obrigatório.",
-        }),
-        email: z.string().email({
-            message: "Email inválido.",
-        }),
-        phone: z.string().min(10, {
-            message: "Telefone deve ter pelo menos 10 dígitos.",
-        }),
-        cpf: z.string().min(11, {
-            message: "CPF deve ter pelo menos 11 dígitos.",
-        }),
-        weight: z.string().min(1, {
-            message: "Peso é obrigatório.",
-        }),
-        height: z.string().min(1, {
-            message: "Altura é obrigatória.",
-        }),
-        observations: z.string().optional(),
-    })
+    function generatePassword(length = 10) {
+        const lowercase = "abcdefghijklmnopqrstuvwxyz";
+        const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const numbers = "0123456789";
+        const special = "@#$&*!";
 
-    const genders = [
-        { label: "Masculino", value: "male" },
-        { label: "Feminino", value: "female" },
-        { label: "Não binário", value: "non-binary" },
-        { label: "Outro", value: "not-specified" },
-    ]
+        const all = lowercase + uppercase + numbers + special;
+
+        const getRandom = (str: string) =>
+            str[Math.floor(Math.random() * str.length)];
+
+        const password = [
+            getRandom(lowercase),
+            getRandom(uppercase),
+            getRandom(numbers),
+            getRandom(special),
+        ];
+
+        // Preenche o restante com caracteres aleatórios
+        for (let i = password.length; i < length; i++) {
+            password.push(getRandom(all));
+        }
+
+        // Embaralha a senha
+        return password
+            .sort(() => 0.5 - Math.random())
+            .join("");
+    }
+
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -65,6 +107,7 @@ export default function NewPatient() {
             firstName: "",
             lastName: "",
             email: "",
+            password: "",
             phone: "",
             cpf: "",
             weight: "",
@@ -73,16 +116,43 @@ export default function NewPatient() {
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsSubmitting(true)
 
-        // Simulate API call
-        setTimeout(() => {
-            console.log(values)
-            ToastSuccess({ message: "Patient registered successfully" })
-            setIsSubmitting(false)
-            form.reset()
-        }, 1500)
+        const full_name = `${values.firstName} ${values.lastName}`
+        const birth_date = format(values.dateOfBirth, "yyyy-MM-dd")
+
+        const payload: RegisterPatientProps = {
+            full_name,
+            birth_date,
+            gender: values.gender,
+            email: values.email,
+            password: values.password,
+            mobile: values.phone,
+            cpf: values.cpf,
+            weight: values.weight,
+            height: values.height,
+            note: values.observations
+        }
+        try {
+            await professionalRegisterNewPatientService({ ...payload });
+            console.log("Payload:", payload);
+
+            showToastSuccess("Paciente cadastrado com sucesso!");
+
+            form.reset();
+        } catch (error: any) {
+            const apiMessage =
+                error?.response?.data?.message || // Axios-like
+                error?.message ||                 // Erro comum
+                "Erro ao cadastrar paciente";     // Fallback genérico
+
+            showToastError(apiMessage);
+        } finally {
+            setIsSubmitting(false);
+        }
+
+
     }
 
     return (
@@ -137,27 +207,37 @@ export default function NewPatient() {
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
                                                         <Button
-                                                            variant={"outline"}
+                                                            variant="outline"
                                                             className={cn(
                                                                 "w-full pl-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground",
+                                                                !field.value && "text-muted-foreground"
                                                             )}
                                                         >
-                                                            {field.value ? format(field.value, "PPP") : <span>Escolha uma data</span>}
+                                                            {field.value
+                                                                ? format(field.value, "PPP", { locale: ptBR })
+                                                                : <span>Escolha uma data</span>}
                                                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                                         </Button>
                                                     </FormControl>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto p-0" align="start">
                                                     <Calendar
-                                                        mode="single"
+                                                        mode="single" // <-- ESSENCIAL
                                                         selected={field.value}
                                                         onSelect={field.onChange}
-                                                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                                                        captionLayout="dropdown"
+                                                        fromYear={1950}
+                                                        toYear={new Date().getFullYear()}
+                                                        locale={ptBR}
+                                                        disabled={(date) =>
+                                                            date > new Date() || date < new Date("1900-01-01")
+                                                        }
                                                         initialFocus
                                                     />
+
                                                 </PopoverContent>
                                             </Popover>
+
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -169,14 +249,23 @@ export default function NewPatient() {
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Número de telefone</FormLabel>
+                                            <FormLabel>Número de Telefone</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="(123) 456-7890" {...field} />
+                                                <Input
+                                                    maxLength={15}
+                                                    placeholder="(11) 98765-4321"
+                                                    value={mask(field.value, ["(99) 99999-9999"])}
+                                                    onChange={(e) => {
+                                                        const raw = unmask(e.target.value);
+                                                        field.onChange(raw);
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+
 
                                 <FormField
                                     control={form.control}
@@ -185,7 +274,15 @@ export default function NewPatient() {
                                         <FormItem>
                                             <FormLabel>CPF</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="(123) 456-7890" {...field} />
+                                                <Input
+                                                    maxLength={14}
+                                                    placeholder="000.000.000-00"
+                                                    value={mask(field.value, ["999.999.999-99"])}
+                                                    onChange={(e) => {
+                                                        const rawValue = unmask(e.target.value);
+                                                        field.onChange(rawValue);
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -239,31 +336,94 @@ export default function NewPatient() {
 
                                 <FormField
                                     control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Senha</FormLabel>
+                                            <FormControl>
+                                                <div
+                                                    className="relative flex items-center">
+                                                    <Input
+                                                        type={passwordVisible ? "text" : "password"}
+                                                        placeholder="Teste@123" {...field} />
+                                                    <Button
+                                                        variant="link"
+                                                        type="button"
+                                                        onClick={togglePasswordVisibility}
+                                                        className="cursor-pointer absolute right-0 top-0"
+                                                        aria-label="Mostrar senha"
+                                                    >
+                                                        {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="link"
+                                                        size="icon"
+                                                        onClick={() => {
+                                                            const generatedPassword = generatePassword();
+                                                            form.setValue("password", generatedPassword);
+                                                        }}
+                                                        className="cursor-pointer absolute right-8 top-0"
+                                                        aria-label="Gerar senha automaticamente"
+                                                    >
+                                                        <WandSparkles />
+                                                    </Button>
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
                                     name="weight"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Peso</FormLabel>
+                                            <FormLabel>Peso (kg)</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="50.2" {...field} />
+                                                <Input
+                                                    placeholder="80.5"
+                                                    inputMode="decimal"
+                                                    pattern="^\d{1,3}(\.\d)?$"
+                                                    value={field.value}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        // Aceita apenas número com até 3 dígitos + 1 decimal
+                                                        if (/^\d{0,3}(\.\d{0,1})?$/.test(value)) {
+                                                            field.onChange(value);
+                                                        }
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
+
+
+
                                 <FormField
                                     control={form.control}
                                     name="height"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Peso</FormLabel>
+                                            <FormLabel>Altura</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="1.55" {...field} />
+                                                <Input
+                                                    placeholder="1.75"
+                                                    value={mask(field.value, ["9.99"])}
+                                                    onChange={(e) => {
+                                                        // const raw = unmask(e.target.value);
+                                                        field.onChange(e.target.value);
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+
 
                                 <FormField
                                     control={form.control}
@@ -282,10 +442,12 @@ export default function NewPatient() {
                         </div>
 
                         <div className="flex gap-4">
-                            <Button type="submit" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
-                                {isSubmitting ? "Cancelando..." : "Cancelar"}
-                            </Button>
-                            <Button type="submit" className="w-50 bg-primary-custom hover:bg-red-500 cursor-pointer" disabled={isSubmitting}>
+                            <Link href="/dashboard">
+                                <Button type="submit" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
+                                    {isSubmitting ? "Cancelando..." : "Cancelar"}
+                                </Button>
+                            </Link>
+                            <Button variant={"primary"} type="submit" className="w-50" disabled={isSubmitting}>
                                 {isSubmitting ? "Cadastrando..." : "Cadastrar"}
                             </Button>
                         </div>

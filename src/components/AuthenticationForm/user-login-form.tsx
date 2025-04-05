@@ -50,12 +50,12 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
 
             console.log("Dados do formulário:", selectedTab);
 
-            if(selectedTab === "patient") {
+            if (selectedTab === "patient") {
                 console.log("Paciente")
                 const response: LoginResponse = await patientlLoginService(data);
                 localStorage.setItem("access_token", response.access_token);
                 console.log(response)
-            } else if(selectedTab === "professional") {
+            } else if (selectedTab === "professional") {
                 console.log("Profissional")
                 const response: LoginResponse = await professionalLoginService(data);
                 localStorage.setItem("access_token", response.access_token);
@@ -159,7 +159,7 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                     </div>
 
                     <Button
-                        className="cursor-pointer bg-primary-custom hover:bg-green-700 transition-colors duration-100 ease-in text-white"
+                        variant={"primary"}
                     >
                         {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
                         Entrar

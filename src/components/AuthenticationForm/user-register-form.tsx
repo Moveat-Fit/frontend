@@ -324,10 +324,10 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                     <Button
                         onClick={handleSubmit}
                         disabled={!allValid}
-                        className="mt-4 cursor-pointer bg-primary-custom hover:bg-green-700 transition-colors duration-100 ease-in text-white"
+                        variant={"primary"}
+                        className="mt-4"
                     >
-                        {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                        Criar
+                        {isLoading ? "Carregando..." : "Cadastrar"}
                     </Button>
                     <Link href="/login" className='text-center'>
                         <Button

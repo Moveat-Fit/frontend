@@ -2,11 +2,9 @@
 
 import {
     BadgeCheck,
-    Bell,
     ChevronsUpDown,
-    CreditCard,
     LogOut,
-    Sparkles,
+    Settings,
 } from "lucide-react"
 
 import {
@@ -29,6 +27,8 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
+import { useRouter } from "next/navigation"
+
 
 export function NavUser({
     user,
@@ -39,7 +39,15 @@ export function NavUser({
         avatar: string
     }
 }) {
+
+    const router = useRouter();
+
     const { isMobile } = useSidebar()
+
+    function logout() {
+        localStorage.removeItem("access_token");
+        router.push("/login");
+    }
 
     return (
         <SidebarMenu>
@@ -79,32 +87,23 @@ export function NavUser({
                                 </div>
                             </div>
                         </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <Sparkles />
-                                Upgrade to Pro
-                            </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <BadgeCheck />
-                                Account
+                                Minha conta
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <CreditCard />
-                                Billing
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Bell />
-                                Notifications
+                                <Settings />
+                                Configurações
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={logout}>
                             <LogOut />
-                            Log out
+                            Sair
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
