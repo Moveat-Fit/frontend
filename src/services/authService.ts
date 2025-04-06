@@ -1,4 +1,3 @@
-import api from '@/utils/axios'; // caminho onde você criou o api com interceptors
 import axios from 'axios';
 import { getProfessionalId } from '@/utils/tokenUtil';
 
@@ -38,9 +37,8 @@ export interface RegisterResponse {
 }
 
 export const professionalLoginService = async (credentials: { login: string; password: string }): Promise<LoginResponse> => {
-    console.log(credentials)
     try {
-        const response = await api.post(URL_BASE + "/professional", {
+        const response = await axios.post(URL_BASE + "/professional", {
             login: credentials.login,
             password: credentials.password,
         }, {
@@ -52,7 +50,6 @@ export const professionalLoginService = async (credentials: { login: string; pas
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Erro na requisição:', error.response?.data || error.message);
             throw new Error(error.response?.data.message || 'Erro desconhecido');
         } else {
             console.error('Erro desconhecido', error);
@@ -62,9 +59,8 @@ export const professionalLoginService = async (credentials: { login: string; pas
 };
 
 export const patientlLoginService = async (credentials: { login: string; password: string }): Promise<LoginResponse> => {
-    console.log(credentials)
     try {
-        const response = await api.post(URL_BASE + "/patient", {
+        const response = await axios.post(URL_BASE + "/patient", {
             login: credentials.login,
             password: credentials.password,
         }, {
@@ -76,7 +72,6 @@ export const patientlLoginService = async (credentials: { login: string; passwor
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Erro na requisição:', error.response?.data || error.message);
             throw new Error(error.response?.data.message || 'Erro desconhecido');
         } else {
             console.error('Erro desconhecido', error);
@@ -87,9 +82,8 @@ export const patientlLoginService = async (credentials: { login: string; passwor
 
 
 export const professionalRegisterService = async (userData: RegisterProfessionalProps): Promise<RegisterResponse> => {
-    console.log(userData)
     try {
-        const response = await api.post(URL_BASE + "/register", {
+        const response = await axios.post(URL_BASE + "/register", {
             full_name: userData.full_name,
             email: userData.email,
             password: userData.password,
@@ -106,7 +100,6 @@ export const professionalRegisterService = async (userData: RegisterProfessional
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Erro na requisição:', error.response?.data || error.message);
             throw new Error(error.response?.data.message || 'Erro desconhecido');
         } else {
             console.error('Erro desconhecido', error);
@@ -117,9 +110,8 @@ export const professionalRegisterService = async (userData: RegisterProfessional
 
 
 export const professionalRegisterNewPatientService = async (userData: RegisterPatientProps): Promise<RegisterResponse> => {
-    console.log(userData)
     try {
-        const response = await api.post(URL_BASE + "/register/patient", {
+        const response = await axios.post(URL_BASE + "/register/patient", {
             full_name: userData.full_name,
             birth_date: userData.birth_date,
             gender: userData.gender,
@@ -140,7 +132,6 @@ export const professionalRegisterNewPatientService = async (userData: RegisterPa
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Erro na requisição:', error.response?.data || error.message);
             throw new Error(error.response?.data.message || 'Erro desconhecido');
         } else {
             console.error('Erro desconhecido', error);
@@ -153,7 +144,7 @@ export const professionalRegisterNewPatientService = async (userData: RegisterPa
 export const professionalReadAllPatientService = async () => {
     const professionalID = getProfessionalId();
     try {
-        const response = await api.get(URL_BASE + `/patients/${professionalID}`, {
+        const response = await axios.get(URL_BASE + `/patients/${professionalID}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -163,7 +154,6 @@ export const professionalReadAllPatientService = async () => {
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Erro na requisição:', error.response?.data || error.message);
             throw new Error(error.response?.data.message || 'Erro desconhecido');
         } else {
             console.error('Erro desconhecido', error);

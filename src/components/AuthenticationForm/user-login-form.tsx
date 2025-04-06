@@ -48,21 +48,16 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
         try {
             setIsLoading(true);
 
-            console.log("Dados do formulário:", selectedTab);
 
             if (selectedTab === "patient") {
                 console.log("Paciente")
                 const response: LoginResponse = await patientlLoginService(data);
                 localStorage.setItem("access_token", response.access_token);
-                console.log(response)
             } else if (selectedTab === "professional") {
-                console.log("Profissional")
                 const response: LoginResponse = await professionalLoginService(data);
                 localStorage.setItem("access_token", response.access_token);
-                console.log(response)
             }
 
-            // ToastSuccess({ message: "Login efetuado com sucesso" });
             router.push(`/dashboard`);
 
         } catch (error: any) {

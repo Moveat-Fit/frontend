@@ -68,7 +68,7 @@ function calculateAge(dateOfBirth: string): number {
 function checkGender(gender: string) {
     if(gender === "M") return "Masculino";
     if(gender === "F") return "Feminino";
-    if(gender === "NB") return "Não Binário";
+    if(gender === "O") return "Não Binário";
     if(gender === "N/S") return "Outro";
     
 }
