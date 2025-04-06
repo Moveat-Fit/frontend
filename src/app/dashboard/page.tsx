@@ -1,12 +1,19 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { getProfessionalName } from "@/utils/tokenUtil";
 import { User, UserPlus } from "lucide-react";
 import Link from "next/link";
 export default function DashboardPage() {
+    
+    const professionalName = getProfessionalName()?.split(" ")[0];
+    const greetings = professionalName ?`Olá, ${professionalName}!` : "Olá!";
+
     return (
         <>
             <div className="pb-3">
-                <h1 className="text-3xl font-bold text-primary-custom">Olá, Carol</h1>
+                <h1 className="text-3xl font-bold text-primary-custom">{greetings}</h1>
                 <h2 className="text-muted-foreground">Gerencie seus pacientes e registros de forma eficiente.</h2>
             </div>
 

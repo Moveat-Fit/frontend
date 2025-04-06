@@ -21,6 +21,7 @@ import { professionalRegisterNewPatientService, RegisterPatientProps } from "@/s
 import { mask, unmask } from "remask";
 import { showToastError, showToastSuccess } from "@/utils/toast";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 const formSchema = z.object({
@@ -67,6 +68,7 @@ const genders = [
 
 export default function NewPatient() {
 
+    const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [passwordVisible, setPasswordVisible] = useState(false);
     const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
@@ -141,6 +143,7 @@ export default function NewPatient() {
             showToastSuccess("Paciente cadastrado com sucesso!");
 
             form.reset();
+            router.push("/dashboard/professional/all-patients");
         } catch (error: any) {
             const apiMessage =
                 error?.response?.data?.message || // Axios-like
@@ -173,7 +176,7 @@ export default function NewPatient() {
                                         name="firstName"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Nome</FormLabel>
+                                                <FormLabel>Nome *</FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="João" {...field} />
                                                 </FormControl>
@@ -187,7 +190,7 @@ export default function NewPatient() {
                                         name="lastName"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Sobrenome</FormLabel>
+                                                <FormLabel>Sobrenome *</FormLabel>
                                                 <FormControl>
                                                     <Input placeholder="Pedro" {...field} />
                                                 </FormControl>
@@ -202,7 +205,7 @@ export default function NewPatient() {
                                     name="dateOfBirth"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel>Data de nascimento</FormLabel>
+                                            <FormLabel>Data de nascimento *</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
@@ -249,7 +252,7 @@ export default function NewPatient() {
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Número de Telefone</FormLabel>
+                                            <FormLabel>Número de Telefone *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     maxLength={15}
@@ -272,7 +275,7 @@ export default function NewPatient() {
                                     name="cpf"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>CPF</FormLabel>
+                                            <FormLabel>CPF *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     maxLength={14}
@@ -294,7 +297,7 @@ export default function NewPatient() {
                                     name="gender"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Gênero</FormLabel>
+                                            <FormLabel>Gênero *</FormLabel>
                                             <FormControl>
                                                 <RadioGroup
                                                     onValueChange={field.onChange}
@@ -325,7 +328,7 @@ export default function NewPatient() {
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Email</FormLabel>
+                                            <FormLabel>Email *</FormLabel>
                                             <FormControl>
                                                 <Input type="email" placeholder="joaopedro@exemplo.com" {...field} />
                                             </FormControl>
@@ -339,7 +342,7 @@ export default function NewPatient() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Senha</FormLabel>
+                                            <FormLabel>Senha *</FormLabel>
                                             <FormControl>
                                                 <div
                                                     className="relative flex items-center">
@@ -379,7 +382,7 @@ export default function NewPatient() {
                                     name="weight"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Peso (kg)</FormLabel>
+                                            <FormLabel>Peso (kg) *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="80.5"
@@ -408,7 +411,7 @@ export default function NewPatient() {
                                     name="height"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Altura</FormLabel>
+                                            <FormLabel>Altura *</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="1.75"

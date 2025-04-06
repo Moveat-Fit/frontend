@@ -2,10 +2,7 @@
 
 import * as React from "react"
 import {
-  Calendar,
   Users,
-  Settings2,
-  User,
   LayoutDashboard,
 } from "lucide-react"
 
@@ -18,6 +15,7 @@ import {
 } from "@/components/ui/sidebar"
 import { NavMain } from "./nav-main"
 import { NavUser } from "./nav-user"
+import { getProfessionalEmail, getProfessionalName } from "@/utils/tokenUtil"
 
 const navItems = [
   {
@@ -38,8 +36,8 @@ const navItems = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = {
-    name: "Carol",
-    email: "carol@example.com",
+    name: getProfessionalName() || "Profissional",
+    email: getProfessionalEmail() || "",
     avatar: "/default-avatar.png",
   }
 

@@ -1,5 +1,7 @@
 import api from '@/utils/axios'; // caminho onde você criou o api com interceptors
 import axios from 'axios';
+import { getProfessionalId } from '@/utils/tokenUtil';
+
 
 
 const URL_BASE = 'http://127.0.0.1:5000';
@@ -147,9 +149,11 @@ export const professionalRegisterNewPatientService = async (userData: RegisterPa
     }
 };
 
+
 export const professionalReadAllPatientService = async () => {
+    const professionalID = getProfessionalId();
     try {
-        const response = await api.get(URL_BASE + "/patients", {
+        const response = await api.get(URL_BASE + `/patients/${professionalID}`, {
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${localStorage.getItem('access_token')}`,
