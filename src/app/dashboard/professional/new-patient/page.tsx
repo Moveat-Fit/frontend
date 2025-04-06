@@ -62,8 +62,7 @@ const formSchema = z.object({
 const genders = [
     { label: "Masculino", value: "M" },
     { label: "Feminino", value: "F" },
-    { label: "Não binário", value: "NB" },
-    { label: "Outro", value: "N/S" },
+    { label: "Outro", value: "O" },
 ]
 
 export default function NewPatient() {
