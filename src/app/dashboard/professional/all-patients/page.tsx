@@ -1,40 +1,17 @@
 "use client"
 
-import { SetStateAction, useCallback, useEffect, useState } from "react"
-import {
-    ChevronDown,
-    Download,
-    FileText,
-    Filter,
-    MoreHorizontal,
-    RefreshCw,
-    Search,
-    UserPlus,
-} from "lucide-react"
-import Link from "next/link"
+import { SetStateAction, useCallback, useEffect, useState } from "react";
+import { ChevronDown, Download, FileText, Filter, MoreHorizontal, RefreshCw, Search, UserPlus, } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination"
-import { professionalReadAllPatientService } from "@/services/authService"
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from "@/components/ui/pagination";
+import { deletePatientService, professionalReadAllPatientService } from "@/services/authService";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 type PatientInterface = {
     id: number
@@ -50,7 +27,9 @@ type PatientInterface = {
     professional_id: number
     created_at: string
     updated_at: string
-}
+};
+
+
 
 function calculateAge(dateOfBirth: string): number {
     const today = new Date()
@@ -66,14 +45,35 @@ function calculateAge(dateOfBirth: string): number {
 }
 
 function checkGender(gender: string) {
-    if(gender === "M") return "Masculino";
-    if(gender === "F") return "Feminino";
-    if(gender === "O") return "Outro";
-    
+    if (gender === "M") return "Masculino";
+    if (gender === "F") return "Feminino";
+    if (gender === "O") return "Outro";
+
 }
 
 export default function AllPatients() {
     const [patients, setPatients] = useState<PatientInterface[]>([])
+    const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
+
+    const deletePatient = async (id: string) => {
+        try {
+            const response = await deletePatientService(id)
+            return response
+        } catch (error) {
+            console.error("Error removing patient:", error)
+        }
+    }
+
+
+    const handleDeleteClick = async (id: number) => {
+        setMenuOpen(false);
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        setSelectedPatientId(id);
+        setDialogOpen(true);
+    };
+
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const getAllPatients = useCallback(async () => {
         try {
@@ -106,16 +106,13 @@ export default function AllPatients() {
         return matchesSearch
     })
 
-    // Calculate pagination
     const indexOfLastPatient = currentPage * patientsPerPage
     const indexOfFirstPatient = indexOfLastPatient - patientsPerPage
     const currentPatients = filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient)
     const totalPages = Math.ceil(filteredPatients.length / patientsPerPage)
 
-    // Handle refresh
     const handleRefresh = () => {
         setIsLoading(true)
-        // Simulate API call
         setTimeout(() => {
             setIsLoading(false)
         }, 800)
@@ -148,7 +145,7 @@ export default function AllPatients() {
                                 value={searchTerm}
                                 onChange={(e) => {
                                     setSearchTerm(e.target.value)
-                                    setCurrentPage(1) // Reset to first page on search
+                                    setCurrentPage(1)
                                 }}
                             />
                         </div>
@@ -157,7 +154,7 @@ export default function AllPatients() {
                             value={statusFilter}
                             onValueChange={(value: SetStateAction<string>) => {
                                 setStatusFilter(value)
-                                setCurrentPage(1) // Reset to first page on filter change
+                                setCurrentPage(1)
                             }}
                         >
                         </Select>
@@ -227,24 +224,57 @@ export default function AllPatients() {
                                         </TableCell>
                                         <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>
                                         <TableCell className="text-right">
-                                            <DropdownMenu>
+
+
+                                            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon">
+                                                    <Button className="cursor-pointer" variant="ghost" size="icon">
                                                         <MoreHorizontal className="h-4 w-4" />
                                                         <span className="sr-only">Abrir menu</span>
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem>
+                                                    <DropdownMenuItem className="cursor-pointer">
                                                         <FileText className="mr-2 h-4 w-4" />
                                                         Ver detalhes
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem>Editar informações do paciente</DropdownMenuItem>
-                                                    <DropdownMenuItem className="text-destructive">Apagar paciente</DropdownMenuItem>
+                                                    <DropdownMenuItem className="cursor-pointer">Editar informações do paciente</DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => handleDeleteClick(patient.id)} className="text-destructive cursor-pointer"
+                                                    >
+                                                        Apagar paciente
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
+
+                                                <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle className="text-primary-custom">Você tem certeza que deseja excluir?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Esta ação não pode ser desfeita. Ao continuar, os dados deste paciente serão removidos permanentemente.                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={async () => {
+                                                                    if (selectedPatientId !== null) {
+                                                                        await deletePatient(selectedPatientId.toString());
+                                                                        setDialogOpen(false);
+                                                                        getAllPatients(); // Recarrega a lista
+                                                                    }
+                                                                }}
+                                                            >Confirmar</AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
                                             </DropdownMenu>
+
+
+
+
+
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -322,7 +352,7 @@ export default function AllPatients() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     )
 }
 
