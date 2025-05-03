@@ -5,11 +5,24 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { getProfessionalName } from "@/utils/tokenUtil";
 import { User, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 export default function DashboardPage() {
-    
-    const professionalName = getProfessionalName()?.split(" ")[0];
-    const greetings = professionalName ?`Olá, ${professionalName}!` : "Olá!";
 
+    const [professionalName, setProfessionalName] = useState<string | null>(null);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+        const name = getProfessionalName();
+        setProfessionalName(name);
+    }, []);
+
+    if (!isClient) return null;
+
+    const professionalNameFirstPart = professionalName?.split(" ")[0];
+    const greetings = professionalNameFirstPart
+        ? `Olá, ${professionalNameFirstPart}!`
+        : "Olá!";
     return (
         <>
             <div className="pb-3">
