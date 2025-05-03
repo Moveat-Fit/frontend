@@ -417,7 +417,7 @@ export default function EditPatientInfoPage() {
                         <div className="flex justify-between gap-4">
                             <Link href="/dashboard/professional">
                                 <Button type="button" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
-                                    {isSubmitting ? "Cancelando..." : "Cancelar"}
+                                    {isSubmitting ? "Atualizando dados..." : "Atualizar dados"}
                                 </Button>
                             </Link>
                             <Button variant={"primary"} type="submit" className="w-50">
