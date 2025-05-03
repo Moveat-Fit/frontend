@@ -28,7 +28,8 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import { useRouter } from "next/navigation"
-
+import { useEffect, useState } from "react"
+import { getProfessionalEmail, getProfessionalName } from "@/utils/tokenUtil"
 
 export function NavUser({
     user,
@@ -43,11 +44,25 @@ export function NavUser({
     const router = useRouter();
 
     const { isMobile } = useSidebar()
+    const [email, setEmail] = useState<string | null>(null);
+    const [name, setName] = useState<string | null>('Carregando...');
+    const [isClient, setIsClient] = useState(false);
+    
+    useEffect(() => {
+        setIsClient(true);
+        const nome = getProfessionalName();
+        const email = getProfessionalEmail();
+        setName(nome ?? 'Profissional');
+        setEmail(email ?? 'Email');
+    }, []);
+    
+    if (!isClient) return null;
 
     function logout() {
         localStorage.removeItem("access_token");
         router.push("/login");
     }
+    if (!isClient) return null;
 
     return (
         <SidebarMenu>
@@ -63,8 +78,8 @@ export function NavUser({
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">{user.name}</span>
-                                <span className="truncate text-xs">{user.email}</span>
+                                <span className="truncate font-semibold">{name}</span>
+                                <span className="truncate text-xs">{email}</span>
                             </div>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
@@ -82,8 +97,8 @@ export function NavUser({
                                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-semibold">{user.name}</span>
-                                    <span className="truncate text-xs">{user.email}</span>
+                                    <span className="truncate font-semibold">{name}</span>
+                                    <span className="truncate text-xs">{email}</span>
                                 </div>
                             </div>
                         </DropdownMenuLabel>
