@@ -46,9 +46,9 @@ function calculateAge(dateOfBirth: string): number {
 }
 
 function checkGender(gender: string) {
-    if (gender === "M") return "Masculino";
-    if (gender === "F") return "Feminino";
-    if (gender === "O") return "Outro";
+    if (gender.toLocaleUpperCase() === "M") return "Masculino";
+    if (gender.toLocaleUpperCase() === "F") return "Feminino";
+    if (gender.toLocaleUpperCase() === "O") return "Outro";
 
 }
 
@@ -120,7 +120,7 @@ export default function AllPatients() {
     }
 
     return (
-        <div className="container mx-auto space-y-2">
+        <div className="container space-y-2">
             <div className="flex justify-between items-center">
                 <div className="pb-3">
                     <h1 className="text-3xl font-bold text-primary-custom">Pacientes</h1>
@@ -245,7 +245,7 @@ export default function AllPatients() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
                                                     <DropdownMenuItem className="cursor-pointer">
-                                                        <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`}>
+                                                        <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`} passHref>
                                                             Editar informações do paciente
                                                         </Link>
                                                     </DropdownMenuItem>

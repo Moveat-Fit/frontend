@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -11,16 +11,16 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Eye, EyeOff, WandSparkles } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
-import { professionalRegisterNewPatientService, RegisterPatientProps } from "@/services/authService";
+import { findPatientDataById, PatientDetailsProps, professionalUpdateDataPatientService } from "@/services/authService";
 import { mask, unmask } from "remask";
 import { showToastError, showToastSuccess } from "@/utils/toast";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
@@ -39,9 +39,6 @@ const formSchema = z.object({
     }),
     email: z.string().email({
         message: "Email inválido.",
-    }),
-    password: z.string().min(8, {
-        message: "Senha deve ter pelo menos 8 caracteres, incluindo letras, números e acentos.",
     }),
     phone: z.string().length(11, {
         message: "Telefone deve ter 11 dígitos.",
@@ -65,39 +62,15 @@ const genders = [
     { label: "Outro", value: "O" },
 ]
 
-export default function NewPatient() {
+
+
+export default function EditPatientInfoPage() {
+    const { patient_id } = useParams();
 
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [passwordVisible, setPasswordVisible] = useState(false);
-    const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
 
-    function generatePassword(length = 10) {
-        const lowercase = "abcdefghijklmnopqrstuvwxyz";
-        const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const numbers = "0123456789";
-        const special = "@#$&*!";
 
-        const all = lowercase + uppercase + numbers + special;
-
-        const getRandom = (str: string) =>
-            str[Math.floor(Math.random() * str.length)];
-
-        const password = [
-            getRandom(lowercase),
-            getRandom(uppercase),
-            getRandom(numbers),
-            getRandom(special),
-        ];
-
-        for (let i = password.length; i < length; i++) {
-            password.push(getRandom(all));
-        }
-
-        return password
-            .sort(() => 0.5 - Math.random())
-            .join("");
-    }
 
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -106,7 +79,6 @@ export default function NewPatient() {
             firstName: "",
             lastName: "",
             email: "",
-            password: "",
             phone: "",
             cpf: "",
             weight: "",
@@ -115,55 +87,96 @@ export default function NewPatient() {
         },
     })
 
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        setIsSubmitting(true)
+        setIsSubmitting(true);
+        console.log("Formulário enviado com os seguintes dados: " + JSON.stringify(values));
 
-        const full_name = `${values.firstName} ${values.lastName}`
-        const birth_date = format(values.dateOfBirth, "yyyy-MM-dd")
-
-        const payload: RegisterPatientProps = {
-            full_name,
-            birth_date,
-            gender: values.gender,
+        const patientData: PatientDetailsProps = {
+            full_name: `${values.firstName} ${values.lastName}`,
+            birth_date: values.dateOfBirth instanceof Date ? values.dateOfBirth.toISOString().split('T')[0] : "",
+            gender: values.gender.toUpperCase(),
             email: values.email,
-            password: values.password,
             mobile: values.phone,
             cpf: values.cpf,
             weight: values.weight,
             height: values.height,
-            note: values.observations
-        }
+            note: values?.observations || "",
+        };
+
         try {
-            await professionalRegisterNewPatientService({ ...payload });
-            console.log("Payload:", payload);
-
-            showToastSuccess("Paciente cadastrado com sucesso!");
-
-            form.reset();
+            const response = await professionalUpdateDataPatientService(patientData, patient_id as string);
+            console.log("Resposta da API:", response);
+            showToastSuccess("Paciente atualizado com sucesso!");
             router.push("/dashboard/professional/all-patients");
         } catch (error: any) {
+            console.error("Erro ao atualizar o paciente:", error);
+
             const apiMessage =
-                error?.response?.data?.message || // Axios-like
-                error?.message ||                 // Erro comum
-                "Erro ao cadastrar paciente";     // Fallback genérico
+                error?.response?.data?.message ||
+                error?.response?.data?.error ||
+                error?.message ||
+                "Erro ao atualizar o paciente.";
 
             showToastError(apiMessage);
-        } finally {
+        }
+        finally {
             setIsSubmitting(false);
         }
+    };
 
 
-    }
+
+
+
+    useEffect(() => {
+        const fetchPatientData = async () => {
+            try {
+                const response = await findPatientDataById(patient_id as string);
+                const patient = response.patient?.[0];
+
+                if (!patient) return;
+
+                const [firstName, ...rest] = patient.full_name?.split(" ") || [];
+                const lastName = rest.join(" ");
+
+                form.reset({
+                    firstName: firstName || "",
+                    lastName: lastName || "",
+                    phone: patient.mobile || "",
+                    email: patient.email || "",
+                    observations: patient.note || "",
+                    dateOfBirth: patient.birth_date ? new Date(patient.birth_date) : undefined,
+                    gender: patient.gender.toUpperCase() || "",
+                    cpf: patient.cpf || "",
+                    weight: patient.weight || "",
+                    height: patient.height || "",
+                });
+
+                console.log("Dados do paciente:", response);
+            } catch (error) {
+                console.error("Erro ao buscar dados do paciente:", error);
+            }
+        };
+
+        if (patient_id) {
+            fetchPatientData();
+        }
+    }, [patient_id, form]);
+
+
 
     return (
         <div className="w-full max-w-4xl">
             <div className="mb-6">
-                <h1 className="text-2xl font-semibold">Cadastro de novo paciente</h1>
-                <p className="my-1">Por favor preencha o formulário abaixo para cadastrar um novo paciente</p>
+                <h1 className="text-3xl font-semibold text-primary-custom">Alteração de dados do paciente</h1>
+                <p className="text-muted-foreground">Por favor preencha o formulário abaixo para atualizar os dados de um paciente</p>
             </div>
             <div>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-6">
 
@@ -315,6 +328,7 @@ export default function NewPatient() {
                                 />
 
 
+
                             </div>
                             <div className="space-y-6">
 
@@ -332,46 +346,7 @@ export default function NewPatient() {
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Senha *</FormLabel>
-                                            <FormControl>
-                                                <div
-                                                    className="relative flex items-center">
-                                                    <Input
-                                                        type={passwordVisible ? "text" : "password"}
-                                                        placeholder="Teste@123" {...field} />
-                                                    <Button
-                                                        variant="link"
-                                                        type="button"
-                                                        onClick={togglePasswordVisibility}
-                                                        className="cursor-pointer absolute right-0 top-0"
-                                                        aria-label="Mostrar senha"
-                                                    >
-                                                        {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
-                                                    </Button>
-                                                    <Button
-                                                        type="button"
-                                                        variant="link"
-                                                        size="icon"
-                                                        onClick={() => {
-                                                            const generatedPassword = generatePassword();
-                                                            form.setValue("password", generatedPassword);
-                                                        }}
-                                                        className="cursor-pointer absolute right-8 top-0"
-                                                        aria-label="Gerar senha automaticamente"
-                                                    >
-                                                        <WandSparkles />
-                                                    </Button>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+
                                 <FormField
                                     control={form.control}
                                     name="weight"
@@ -428,7 +403,7 @@ export default function NewPatient() {
                                         <FormItem>
                                             <FormLabel>Observações</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="" className="resize-none h-25" {...field} />
+                                                <Textarea placeholder="" className="resize-none h-30" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -439,12 +414,12 @@ export default function NewPatient() {
 
                         <div className="flex justify-between gap-4">
                             <Link href="/dashboard">
-                                <Button type="submit" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
+                                <Button type="button" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
                                     {isSubmitting ? "Cancelando..." : "Cancelar"}
                                 </Button>
                             </Link>
-                            <Button variant={"primary"} type="submit" className="w-50" disabled={isSubmitting}>
-                                {isSubmitting ? "Cadastrando..." : "Cadastrar"}
+                            <Button variant={"primary"} type="submit" className="w-50">
+                                Cadastrar
                             </Button>
                         </div>
 
@@ -454,6 +429,7 @@ export default function NewPatient() {
             <footer className="mt-5 text-sm text-muted-foreground">
                 <p>Fique tranquilo(a). Todas as informações são confidenciais e gerido por nós da equipe Moveat.</p>
             </footer>
+
         </div>
     )
 }

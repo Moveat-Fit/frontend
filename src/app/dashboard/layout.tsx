@@ -8,7 +8,7 @@ import { ToastContainer } from "react-toastify";
 
 export default function Dashboard({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <main className="ml-9">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -32,7 +32,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
         </SidebarInset>
       </SidebarProvider>
       <ToastContainer />
-    </>
+    </main>
 
   );
 }

@@ -1,9 +1,26 @@
 import axios from 'axios';
 import { getProfessionalId } from '@/utils/tokenUtil';
+import { showToastError } from '@/utils/toast';
 
 
 
 const URL_BASE = 'http://127.0.0.1:5000';
+
+export interface PatientDetailsProps {
+    full_name: string;
+    birth_date: string;
+    gender: 'm' | 'f' | string;
+    email: string;
+    mobile: string;
+    cpf: string;
+    weight: string;
+    height: string;
+    note: string;
+}
+
+export interface PatientResponse {
+    patient: PatientDetailsProps[];
+}
 
 export interface RegisterProfessionalProps {
     full_name: string,
@@ -28,11 +45,28 @@ export interface RegisterPatientProps {
     note?: string,
 }
 
+export interface UpdatePatientProps {
+    full_name: string,
+    birth_date: string,
+    gender: string,
+    email: string,
+    mobile: string,
+    cpf: string,
+    weight: string,
+    height: string,
+    note?: string,
+}
+
+
 export interface LoginResponse {
     access_token: string;
 }
 
 export interface RegisterResponse {
+    message: string;
+}
+
+export interface UpdateResponse {
     message: string;
 }
 
@@ -139,6 +173,58 @@ export const professionalRegisterNewPatientService = async (userData: RegisterPa
         }
     }
 };
+
+export const findPatientDataById = async (patientId: string): Promise<PatientResponse> => {
+    try {
+        const response = await axios.get(`${URL_BASE}/patient/${patientId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data.message || 'Erro desconhecido');
+        } else {
+            console.error('Erro desconhecido', error);
+            throw new Error('Erro desconhecido');
+        }
+    }
+};
+
+export const professionalUpdateDataPatientService = async (userData: UpdatePatientProps, patient_id: string): Promise<UpdatePatientProps> => {
+    try {
+        const response = await axios.put(URL_BASE + `/register/patient/${patient_id}`, {
+            full_name: userData.full_name,
+            birth_date: userData.birth_date,
+            gender: userData.gender,
+            email: userData.email,
+            mobile: userData.mobile,
+            cpf: userData.cpf,
+            weight: userData.weight,
+            height: userData.height,
+            note: userData.note,
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            },
+        });
+
+        return response.data;
+    } catch (error: any) {
+        console.error("Erro ao atualizar o paciente:", error);
+
+        const apiMessage =
+            error?.response?.data?.message || // quando o erro é re-jogado com axios intacto
+            error?.data?.message ||           // quando você customiza o throw
+            error?.message ||                 // fallback do JS Error
+            "Erro ao atualizar o paciente.";
+
+        showToastError(apiMessage);
+    }
+};
+
 
 
 export const professionalReadAllPatientService = async () => {
