@@ -66,16 +66,15 @@ export default function AllPatients() {
         }
     }
 
-
     const handleDeleteClick = async (id: number) => {
-        setMenuOpen(false);
+        //setMenuOpen(false);
         await new Promise((resolve) => setTimeout(resolve, 10));
         setSelectedPatientId(id);
         setDialogOpen(true);
     };
 
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [openMenuPatientId, setOpenMenuPatientId] = useState<number | null>(null);
 
     const getAllPatients = useCallback(async () => {
         try {
@@ -226,9 +225,12 @@ export default function AllPatients() {
                                         </TableCell>
                                         <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>
                                         <TableCell className="text-right">
-
-
-                                            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+                                            <DropdownMenu
+                                                open={openMenuPatientId === patient.id}
+                                                onOpenChange={(isOpen) =>
+                                                    setOpenMenuPatientId(isOpen ? patient.id : null)
+                                                }
+                                            >
                                                 <DropdownMenuTrigger asChild>
                                                     <Button className="cursor-pointer" variant="ghost" size="icon">
                                                         <MoreHorizontal className="h-4 w-4" />
@@ -236,48 +238,25 @@ export default function AllPatients() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
                                                     <DropdownMenuItem className="cursor-pointer">
                                                         <FileText className="mr-2 h-4 w-4" />
                                                         Ver detalhes
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="cursor-pointer">Editar informações do paciente</DropdownMenuItem>
+                                                    <DropdownMenuItem className="cursor-pointer">
+                                                        <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`}>
+                                                            Editar informações do paciente
+                                                        </Link>
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem
-                                                        onClick={() => handleDeleteClick(patient.id)} className="text-destructive cursor-pointer"
+                                                        onClick={() => handleDeleteClick(patient.id)}
+                                                        className="text-destructive cursor-pointer"
                                                     >
                                                         Apagar paciente
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
-
-                                                <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle className="text-primary-custom">Você tem certeza que deseja excluir?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                Esta ação não pode ser desfeita. Ao continuar, os dados deste paciente serão removidos permanentemente.                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                            <AlertDialogAction
-                                                                onClick={async () => {
-                                                                    if (selectedPatientId !== null) {
-                                                                        await deletePatient(selectedPatientId.toString());
-                                                                        setDialogOpen(false);
-                                                                        getAllPatients(); // Recarrega a lista
-                                                                        showToastSuccess("Paciente removido com sucesso!");
-                                                                    }
-                                                                }}
-                                                            >Confirmar</AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
                                             </DropdownMenu>
-
-
-
-
-
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -289,22 +268,51 @@ export default function AllPatients() {
                                 </TableRow>
                             )}
                         </TableBody>
+
+                        <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle className="text-primary-custom">
+                                        Você tem certeza que deseja excluir?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Esta ação não pode ser desfeita. Ao continuar, os dados deste paciente serão removidos permanentemente.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={async () => {
+                                            if (selectedPatientId !== null) {
+                                                await deletePatient(selectedPatientId.toString());
+                                                setDialogOpen(false);
+                                                getAllPatients(); // Recarrega a lista
+                                                showToastSuccess("Paciente removido com sucesso!");
+                                            }
+                                        }}
+                                    >
+                                        Confirmar
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+
                     </Table>
                 </div>
 
                 {filteredPatients.length > 0 && (
                     <div className="flex items-center justify-between mt-4">
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-muted-foreground text-nowrap">
                             Exibindo {indexOfFirstPatient + 1}-{Math.min(indexOfLastPatient, filteredPatients.length)} de{" "}
-                            {filteredPatients.length} patients
+                            {filteredPatients.length} pacientes
                         </div>
 
-                        <Pagination>
+                        <Pagination className="mr-60">
                             <PaginationContent>
                                 <PaginationItem>
                                     <PaginationPrevious
                                         onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                                    //   disabled={currentPage === 1}
+                                        className="cursor-pointer"
                                     />
                                 </PaginationItem>
 
@@ -326,6 +334,7 @@ export default function AllPatients() {
                                             <PaginationLink
                                                 isActive={currentPage === pageToShow}
                                                 onClick={() => setCurrentPage(pageToShow)}
+                                                className="cursor-pointer"
                                             >
                                                 {pageToShow}
                                             </PaginationLink>
@@ -347,7 +356,7 @@ export default function AllPatients() {
                                 <PaginationItem>
                                     <PaginationNext
                                         onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                                    //   disabled={currentPage === totalPages}
+                                        className="cursor-pointer"
                                     />
                                 </PaginationItem>
                             </PaginationContent>
