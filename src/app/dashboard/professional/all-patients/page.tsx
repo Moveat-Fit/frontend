@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from "@/components/ui/pagination";
 import { deletePatientService, professionalReadAllPatientService } from "@/services/authService";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { showToastError, showToastSuccess } from "@/utils/toast";
 
 type PatientInterface = {
     id: number
@@ -61,6 +62,7 @@ export default function AllPatients() {
             return response
         } catch (error) {
             console.error("Error removing patient:", error)
+            showToastError("Erro ao remover paciente")
         }
     }
 
@@ -263,6 +265,7 @@ export default function AllPatients() {
                                                                         await deletePatient(selectedPatientId.toString());
                                                                         setDialogOpen(false);
                                                                         getAllPatients(); // Recarrega a lista
+                                                                        showToastSuccess("Paciente removido com sucesso!");
                                                                     }
                                                                 }}
                                                             >Confirmar</AlertDialogAction>
