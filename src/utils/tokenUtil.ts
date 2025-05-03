@@ -21,7 +21,9 @@ interface CustomPayload extends JwtPayload {
 
 
 export function getDecodedToken(): CustomPayload | null {
-  const token = localStorage.getItem('access_token');
+  if (typeof window === "undefined") return null;
+
+  const token = localStorage.getItem("access_token");
   if (!token) return null;
 
   try {
@@ -31,6 +33,7 @@ export function getDecodedToken(): CustomPayload | null {
     return null;
   }
 }
+
 
 export function getProfessionalId(): string | null {
   const decoded = getDecodedToken();
