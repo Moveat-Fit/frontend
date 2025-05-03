@@ -27,7 +27,7 @@ const navItems = [
   },
   {
     title: "Meus Pacientes",
-    url: "/dashboard/professional/all-patients",
+    url: "/dashboard/professional",
     icon: Users,
     isActive: false,
     items: [],

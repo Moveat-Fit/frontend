@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import { getProfessionalId } from '@/utils/tokenUtil';
 import { showToastError } from '@/utils/toast';
@@ -13,8 +14,8 @@ export interface PatientDetailsProps {
     email: string;
     mobile: string;
     cpf: string;
-    weight: string;
-    height: string;
+    weight: number;
+    height: number;
     note: string;
 }
 
@@ -52,8 +53,8 @@ export interface UpdatePatientProps {
     email: string,
     mobile: string,
     cpf: string,
-    weight: string,
-    height: string,
+    weight: number,
+    height: number,
     note?: string,
 }
 
@@ -192,7 +193,7 @@ export const findPatientDataById = async (patientId: string): Promise<PatientRes
     }
 };
 
-export const professionalUpdateDataPatientService = async (userData: UpdatePatientProps, patient_id: string): Promise<UpdatePatientProps> => {
+export const professionalUpdateDataPatientService = async (userData: UpdatePatientProps, patient_id: string): Promise<UpdatePatientProps | undefined> => {
     try {
         const response = await axios.put(URL_BASE + `/register/patient/${patient_id}`, {
             full_name: userData.full_name,
@@ -223,6 +224,8 @@ export const professionalUpdateDataPatientService = async (userData: UpdatePatie
 
         showToastError(apiMessage);
     }
+
+    return undefined; // Ensure the function always returns a value
 };
 
 

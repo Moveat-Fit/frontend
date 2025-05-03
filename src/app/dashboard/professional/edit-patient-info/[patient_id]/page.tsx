@@ -46,11 +46,11 @@ const formSchema = z.object({
     cpf: z.string().length(11, {
         message: "CPF deve ter 11 dígitos.",
     }),
-    weight: z.string().refine(val => /^\d{1,3}(\.\d)?$/.test(val), {
-        message: "Peso inválido. Ex: 80.5"
+    weight: z.coerce.number().refine(val => val >= 0 && val <= 999.9, {
+        message: "Peso inválido. Ex: 80.5",
     }),
-    height: z.string().refine(val => /^\d\.\d{2}$/.test(val), {
-        message: "Altura inválida. Ex: 1.75"
+    height: z.coerce.number().refine(val => /^\d\.\d{2}$/.test(val.toFixed(2)), {
+        message: "Altura inválida. Ex: 1.75",
     }),
 
     observations: z.string().optional(),
@@ -81,8 +81,8 @@ export default function EditPatientInfoPage() {
             email: "",
             phone: "",
             cpf: "",
-            weight: "",
-            height: "",
+            weight: 0,
+            height: 0,
             observations: "",
         },
     })
@@ -99,8 +99,9 @@ export default function EditPatientInfoPage() {
             email: values.email,
             mobile: values.phone,
             cpf: values.cpf,
-            weight: values.weight,
-            height: values.height,
+            weight: Number(values.weight),
+            height: Number(values.height),
+
             note: values?.observations || "",
         };
 
@@ -108,7 +109,7 @@ export default function EditPatientInfoPage() {
             const response = await professionalUpdateDataPatientService(patientData, patient_id as string);
             console.log("Resposta da API:", response);
             showToastSuccess("Paciente atualizado com sucesso!");
-            router.push("/dashboard/professional/all-patients");
+            router.push("/dashboard/professional");
         } catch (error: any) {
             console.error("Erro ao atualizar o paciente:", error);
 
@@ -149,8 +150,8 @@ export default function EditPatientInfoPage() {
                     dateOfBirth: patient.birth_date ? new Date(patient.birth_date) : undefined,
                     gender: patient.gender.toUpperCase() || "",
                     cpf: patient.cpf || "",
-                    weight: patient.weight || "",
-                    height: patient.height || "",
+                    weight: patient.weight ? Number(patient.weight) : undefined,
+                    height: patient.height ? Number(patient.height) : undefined,
                 });
 
                 console.log("Dados do paciente:", response);
@@ -358,7 +359,7 @@ export default function EditPatientInfoPage() {
                                                     placeholder="80.5"
                                                     inputMode="decimal"
                                                     pattern="^\d{1,3}(\.\d)?$"
-                                                    value={field.value}
+                                                    value={field.value ?? ""}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
                                                         if (/^\d{0,3}(\.\d{0,1})?$/.test(value)) {
@@ -375,6 +376,7 @@ export default function EditPatientInfoPage() {
 
 
 
+
                                 <FormField
                                     control={form.control}
                                     name="height"
@@ -384,7 +386,7 @@ export default function EditPatientInfoPage() {
                                             <FormControl>
                                                 <Input
                                                     placeholder="1.75"
-                                                    value={mask(field.value, ["9.99"])}
+                                                    value={mask(String(field.value), ["9.99"])}
                                                     onChange={(e) => {
                                                         field.onChange(e.target.value);
                                                     }}
@@ -413,7 +415,7 @@ export default function EditPatientInfoPage() {
                         </div>
 
                         <div className="flex justify-between gap-4">
-                            <Link href="/dashboard">
+                            <Link href="/dashboard/professional">
                                 <Button type="button" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
                                     {isSubmitting ? "Cancelando..." : "Cancelar"}
                                 </Button>

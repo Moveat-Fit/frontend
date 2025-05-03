@@ -140,7 +140,7 @@ export default function NewPatient() {
             showToastSuccess("Paciente cadastrado com sucesso!");
 
             form.reset();
-            router.push("/dashboard/professional/all-patients");
+            router.push("/dashboard/professional");
         } catch (error: any) {
             const apiMessage =
                 error?.response?.data?.message || // Axios-like
@@ -438,7 +438,7 @@ export default function NewPatient() {
                         </div>
 
                         <div className="flex justify-between gap-4">
-                            <Link href="/dashboard">
+                            <Link href="/dashboard/professional/">
                                 <Button type="submit" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
                                     {isSubmitting ? "Cancelando..." : "Cancelar"}
                                 </Button>

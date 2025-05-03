@@ -13,6 +13,7 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, Pagi
 import { deletePatientService, professionalReadAllPatientService } from "@/services/authService";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { showToastError, showToastSuccess } from "@/utils/toast";
+import { getProfessionalName } from "@/utils/tokenUtil";
 
 type PatientInterface = {
     id: number
@@ -73,6 +74,21 @@ export default function AllPatients() {
         setDialogOpen(true);
     };
 
+    const [professionalName, setProfessionalName] = useState<string | null>(null);
+    const [isClient, setIsClient] = useState(false);
+
+
+    useEffect(() => {
+        setIsClient(true);
+        const name = getProfessionalName();
+        setProfessionalName(name);
+    }, []);
+
+    const professionalNameFirstPart = professionalName?.split(" ")[0];
+    const greetings = professionalNameFirstPart
+        ? `Olá, ${professionalNameFirstPart.charAt(0).toUpperCase() + String(professionalNameFirstPart).slice(1)}!`
+        : "Olá!";
+        
     const [dialogOpen, setDialogOpen] = useState(false);
     const [openMenuPatientId, setOpenMenuPatientId] = useState<number | null>(null);
 
@@ -119,11 +135,13 @@ export default function AllPatients() {
         }, 800)
     }
 
+    if (!isClient) return null;
+
     return (
         <div className="container space-y-2">
             <div className="flex justify-between items-center">
                 <div className="pb-3">
-                    <h1 className="text-3xl font-bold text-primary-custom">Pacientes</h1>
+                    <h1 className="text-3xl font-bold text-primary-custom">{greetings}</h1>
                     <h2 className="text-muted-foreground">Gerencie e veja as informações de seus pacientes.</h2>
                 </div>
                 <Button variant={"primary"} asChild>
