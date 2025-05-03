@@ -1,9 +1,12 @@
 "use client";
-
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+// src/app/layout.tsx
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { Toaster } from '@/components/ui/sonner';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { useState } from "react";
+import { QueryClient } from "@tanstack/react-query";
+
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,21 +18,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const queryClient = new QueryClient();
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <QueryClientProvider client={queryClient}>
           {children}
           <Toaster />
-        </body>
-      </html>
-    </QueryClientProvider>
+        </QueryClientProvider>
+      </body>
+    </html>
   );
 }
