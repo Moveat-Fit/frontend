@@ -162,7 +162,32 @@ export const professionalReadAllPatientService = async () => {
     }
 };
 
+export const deletePatientService = async (patientId: string) => {
+    try {
+        const response = await axios.delete(`${URL_BASE}/deletePatient/${patientId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const serverMessage = error.response?.data?.message;
+            const statusCode = error.response?.status;
 
+            console.error('Erro do servidor:', {
+                status: statusCode,
+                data: error.response?.data,
+            });
+
+            throw new Error(serverMessage || `Erro ${statusCode || ''} ao deletar paciente`);
+        } else {
+            console.error('Erro inesperado:', error);
+            throw new Error('Erro inesperado ao deletar paciente');
+        }
+    }
+};
 
 
 
