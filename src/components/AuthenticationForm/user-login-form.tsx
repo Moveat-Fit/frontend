@@ -51,7 +51,7 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
             }
 
             localStorage.setItem("access_token", response.access_token);
-            router.push(`/dashboard`);
+            if(selectedTab === "professional") router.push("/dashboard/professional"); 
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message || error?.message || "Erro desconhecido";
             ToastError({ message: errorMessage });
