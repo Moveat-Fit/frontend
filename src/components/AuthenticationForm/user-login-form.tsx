@@ -19,8 +19,6 @@ import { ToastContainer, toast } from "react-toastify";
 import ToastError from "../ToastError";
 import ToastSuccess from "../ToastSuccess";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
-import { table } from "console";
-
 
 interface LoginFormData {
     login: string;
@@ -33,43 +31,29 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
     });
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
     const [selectedTab, setSelectedTab] = useState("patient");
 
     const router = useRouter();
 
     const handleChange = (field: keyof LoginFormData) => {
-        if (isSubmitted) {
-            clearErrors(field);
-        }
+        clearErrors(field);
     };
 
     const onSubmit = async (data: LoginFormData) => {
+        setIsLoading(true);
         try {
-            setIsLoading(true);
-
+            let response: LoginResponse;
 
             if (selectedTab === "patient") {
-                console.log("Paciente")
-                const response: LoginResponse = await patientlLoginService(data);
-                localStorage.setItem("access_token", response.access_token);
-            } else if (selectedTab === "professional") {
-                const response: LoginResponse = await professionalLoginService(data);
-                localStorage.setItem("access_token", response.access_token);
+                response = await patientlLoginService(data);
+            } else {
+                response = await professionalLoginService(data);
             }
 
+            localStorage.setItem("access_token", response.access_token);
             router.push(`/dashboard`);
-
         } catch (error: any) {
-            setIsLoading(false);
-            let errorMessage = "Erro desconhecido";
-
-            if (error?.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else if (error?.message) {
-                errorMessage = error.message;
-            }
-
+            const errorMessage = error?.response?.data?.message || error?.message || "Erro desconhecido";
             ToastError({ message: errorMessage });
         } finally {
             setIsLoading(false);
@@ -80,17 +64,15 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
         <div className={cn("grid gap-6", className)} {...props}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid gap-2">
-                    <Tabs value={selectedTab} onValueChange={setSelectedTab} defaultValue="patient" className="border border-primary-custom rounded-lg">
+                    <Tabs value={selectedTab} onValueChange={setSelectedTab} className="border border-primary-custom rounded-lg">
                         <TabsList>
-                            <TabsTrigger className="cursor-pointer" value="patient">Paciente</TabsTrigger>
-                            <TabsTrigger className="cursor-pointer" value="professional">Profissional</TabsTrigger>
+                            <TabsTrigger value="patient">Paciente</TabsTrigger>
+                            <TabsTrigger value="professional">Profissional</TabsTrigger>
                         </TabsList>
                     </Tabs>
 
                     <div className="grid gap-1">
-                        <Label className="sr-only" htmlFor="email">
-                            Email
-                        </Label>
+                        <Label className="sr-only" htmlFor="email">Email</Label>
 
                         <Controller
                             name="login"
@@ -99,22 +81,17 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                             render={({ field }) => (
                                 <Input
                                     {...field}
+                                    id="login"
+                                    type="email"
+                                    placeholder="E-mail"
+                                    disabled={isLoading}
                                     onChange={(e) => {
                                         field.onChange(e);
                                         handleChange("login");
                                     }}
-                                    id="login"
-                                    type="email"
-                                    placeholder="E-mail"
-                                    autoCapitalize="none"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
                                 />
-
                             )}
-
                         />
-
                         {errors.login && <ToastError message={errors.login.message || ""} />}
 
                         <Controller
@@ -127,8 +104,6 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                                     type="password"
                                     className="mt-2"
                                     placeholder="Senha"
-                                    autoCapitalize="none"
-                                    autoCorrect="off"
                                     disabled={isLoading}
                                     {...field}
                                     onChange={(e) => {
@@ -142,31 +117,28 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                     </div>
 
                     <div className="my-3 items-top flex space-x-2">
-                        <Checkbox id="terms1" className="cursor-pointer" />
+                        <Checkbox id="terms1" />
                         <div className="grid gap-1.5 leading-none">
-                            <label
-                                htmlFor="terms1"
-                                className="cursor-pointer text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
+                            <label htmlFor="terms1" className="text-sm leading-none">
                                 Lembrar senha
                             </label>
                         </div>
                     </div>
 
-                    <Button
-                        variant={"primary"}
-                    >
-                        {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-                        Entrar
+                    <Button variant={"primary"} disabled={isLoading}>
+                        {isLoading ? (
+                            <Loader className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            "Entrar"
+                        )}
                     </Button>
 
                     {selectedTab === "professional" && (
                         <>
-                            <Link href="/register" className="text-center">
+                            <Link href="/register">
                                 <Button
-                                    type="submit"
                                     variant={"link"}
-                                    className="p-6 cursor-pointer text-primary-custom hover:text-green-700 duration-100 ease-in"
+                                    className="p-6 text-primary-custom hover:text-green-700 duration-100 ease-in"
                                 >
                                     Ainda não possuo uma conta
                                 </Button>
@@ -183,7 +155,7 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                                 </div>
                             </div>
 
-                            <Button className="cursor-pointer" variant="outline" type="button">
+                            <Button variant="outline" type="button" disabled={isLoading}>
                                 {isLoading ? (
                                     <Loader className="mr-2 h-4 w-4 animate-spin" />
                                 ) : (
@@ -193,10 +165,9 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                             </Button>
                         </>
                     )}
-
                 </div>
             </form>
             <ToastContainer />
         </div>
     );
-}
+};
