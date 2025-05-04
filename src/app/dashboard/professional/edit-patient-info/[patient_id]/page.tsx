@@ -177,9 +177,11 @@ export default function EditPatientInfoPage() {
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-6">
 
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Coluna Esquerda */}
+                            <div className="space-y-6">
+                                {/* Nome e Sobrenome */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <FormField
                                         control={form.control}
@@ -188,7 +190,7 @@ export default function EditPatientInfoPage() {
                                             <FormItem>
                                                 <FormLabel>Nome *</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="João" {...field} />
+                                                    <Input placeholder="João" {...field} data-testid="input-firstName" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -202,7 +204,7 @@ export default function EditPatientInfoPage() {
                                             <FormItem>
                                                 <FormLabel>Sobrenome *</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Pedro" {...field} />
+                                                    <Input placeholder="Pedro" {...field} data-testid="input-lastName" />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -210,6 +212,7 @@ export default function EditPatientInfoPage() {
                                     />
                                 </div>
 
+                                {/* Data de nascimento */}
                                 <FormField
                                     control={form.control}
                                     name="dateOfBirth"
@@ -225,6 +228,7 @@ export default function EditPatientInfoPage() {
                                                                 "w-full pl-3 text-left font-normal",
                                                                 !field.value && "text-muted-foreground"
                                                             )}
+                                                            data-testid="button-dateOfBirth"
                                                         >
                                                             {field.value
                                                                 ? format(field.value, "PPP", { locale: ptBR })
@@ -247,16 +251,14 @@ export default function EditPatientInfoPage() {
                                                         }
                                                         initialFocus
                                                     />
-
                                                 </PopoverContent>
                                             </Popover>
-
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-
+                                {/* Telefone */}
                                 <FormField
                                     control={form.control}
                                     name="phone"
@@ -272,6 +274,7 @@ export default function EditPatientInfoPage() {
                                                         const raw = unmask(e.target.value);
                                                         field.onChange(raw);
                                                     }}
+                                                    data-testid="input-phone"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -279,7 +282,7 @@ export default function EditPatientInfoPage() {
                                     )}
                                 />
 
-
+                                {/* CPF */}
                                 <FormField
                                     control={form.control}
                                     name="cpf"
@@ -295,6 +298,7 @@ export default function EditPatientInfoPage() {
                                                         const rawValue = unmask(e.target.value);
                                                         field.onChange(rawValue);
                                                     }}
+                                                    data-testid="input-cpf"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -302,13 +306,14 @@ export default function EditPatientInfoPage() {
                                     )}
                                 />
 
+                                {/* Gênero */}
                                 <FormField
                                     control={form.control}
                                     name="gender"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Gênero *</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value} data-testid="select-gender">
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
                                                         <SelectValue placeholder="Selecione o gênero" />
@@ -326,12 +331,11 @@ export default function EditPatientInfoPage() {
                                         </FormItem>
                                     )}
                                 />
-
-
-
                             </div>
-                            <div className="space-y-6">
 
+                            {/* Coluna Direita */}
+                            <div className="space-y-6">
+                                {/* Email */}
                                 <FormField
                                     control={form.control}
                                     name="email"
@@ -339,14 +343,19 @@ export default function EditPatientInfoPage() {
                                         <FormItem>
                                             <FormLabel>Email *</FormLabel>
                                             <FormControl>
-                                                <Input type="email" placeholder="joaopedro@exemplo.com" {...field} />
+                                                <Input
+                                                    type="email"
+                                                    placeholder="joaopedro@exemplo.com"
+                                                    {...field}
+                                                    data-testid="input-email"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
 
-
+                                {/* Peso */}
                                 <FormField
                                     control={form.control}
                                     name="weight"
@@ -365,6 +374,8 @@ export default function EditPatientInfoPage() {
                                                             field.onChange(value);
                                                         }
                                                     }}
+                                                    data-testid="input-weight"
+                                                    name="weight"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -372,10 +383,7 @@ export default function EditPatientInfoPage() {
                                     )}
                                 />
 
-
-
-
-
+                                {/* Altura */}
                                 <FormField
                                     control={form.control}
                                     name="height"
@@ -389,6 +397,8 @@ export default function EditPatientInfoPage() {
                                                     onChange={(e) => {
                                                         field.onChange(e.target.value);
                                                     }}
+                                                    data-testid="input-height"
+                                                    name="height"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -396,7 +406,7 @@ export default function EditPatientInfoPage() {
                                     )}
                                 />
 
-
+                                {/* Observações */}
                                 <FormField
                                     control={form.control}
                                     name="observations"
@@ -404,7 +414,12 @@ export default function EditPatientInfoPage() {
                                         <FormItem>
                                             <FormLabel>Observações</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="" className="resize-none h-30" {...field} />
+                                                <Textarea
+                                                    placeholder=""
+                                                    className="resize-none h-30"
+                                                    {...field}
+                                                    data-testid="textarea-observations"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -413,13 +428,14 @@ export default function EditPatientInfoPage() {
                             </div>
                         </div>
 
+
                         <div className="flex justify-between gap-4">
                             <Link href="/dashboard/professional">
-                                <Button type="button" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
+                                <Button name="cancel" data-testid="cancel-button" type="button" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
                                     {isSubmitting ? "Cancelando..." : "Cancelar atualização"}
                                 </Button>
                             </Link>
-                            <Button variant={"primary"} type="submit" className="w-50">
+                            <Button name="submit" data-testid="submit-button" variant={"primary"} type="submit" className="w-50">
                                 Atualizar dados
                             </Button>
                         </div>
