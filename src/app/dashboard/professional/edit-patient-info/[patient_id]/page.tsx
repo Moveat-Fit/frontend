@@ -52,7 +52,6 @@ const formSchema = z.object({
     height: z.coerce.number().refine(val => /^\d\.\d{2}$/.test(val.toFixed(2)), {
         message: "Altura inválida. Ex: 1.75",
     }),
-
     observations: z.string().optional(),
 })
 

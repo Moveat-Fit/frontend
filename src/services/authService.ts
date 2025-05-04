@@ -193,7 +193,10 @@ export const findPatientDataById = async (patientId: string): Promise<PatientRes
     }
 };
 
-export const professionalUpdateDataPatientService = async (userData: UpdatePatientProps, patient_id: string): Promise<UpdatePatientProps | undefined> => {
+export const professionalUpdateDataPatientService = async (
+    userData: UpdatePatientProps,
+    patient_id: string
+): Promise<UpdatePatientProps> => {
     try {
         const response = await axios.put(URL_BASE + `/register/patient/${patient_id}`, {
             full_name: userData.full_name,
@@ -217,17 +220,18 @@ export const professionalUpdateDataPatientService = async (userData: UpdatePatie
         console.error("Erro ao atualizar o paciente:", error);
 
         const apiMessage =
-            error?.response?.data?.message || // quando o erro é re-jogado com axios intacto
-            error?.data?.message ||           // quando você customiza o throw
-            error?.message ||                 // fallback do JS Error
+            error?.response?.data?.message ||
+            error?.data?.message ||
+            error?.message ||
             "Erro ao atualizar o paciente.";
 
-        showToastError(apiMessage);
+        // Remova o toast daqui (deixe para o onSubmit exibir)
+        // showToastError(apiMessage);
+
+        // Rejoga o erro para o onSubmit lidar
+        throw new Error(apiMessage);
     }
-
-    return undefined; // Ensure the function always returns a value
 };
-
 
 
 export const professionalReadAllPatientService = async () => {
