@@ -46,12 +46,17 @@ const formSchema = z.object({
     cpf: z.string().length(11, {
         message: "CPF deve ter 11 dígitos.",
     }),
-    weight: z.coerce.number().refine(val => val >= 0 && val <= 999.9, {
-        message: "Peso inválido. Ex: 80.5",
-    }),
-    height: z.coerce.number().refine(val => /^\d\.\d{2}$/.test(val.toFixed(2)), {
-        message: "Altura inválida. Ex: 1.75",
-    }),
+    weight: z.coerce.number()
+        .min(1, { message: "Peso é obrigatório" }) // Verifica se o peso é maior que 0
+        .refine(val => val >= 0 && val <= 999.9, {
+            message: "Peso inválido. Ex: 80.5",
+        }),
+
+    height: z.coerce.number()
+        .min(1, { message: "Altura é obrigatória" }) // Verifica se a altura é maior que 0
+        .refine(val => /^\d\.\d{2}$/.test(val.toFixed(2)), {
+            message: "Altura inválida. Ex: 1.75",
+        }),
     observations: z.string().optional(),
 })
 
@@ -119,6 +124,8 @@ export default function EditPatientInfoPage() {
                 "Erro ao atualizar o paciente.";
 
             showToastError(apiMessage);
+
+
         }
         finally {
             setIsSubmitting(false);
