@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import { getProfessionalId } from '@/utils/tokenUtil';
-import { showToastError } from '@/utils/toast';
-
-
 
 const URL_BASE = 'http://127.0.0.1:5000';
 
