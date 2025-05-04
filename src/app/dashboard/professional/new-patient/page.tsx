@@ -166,7 +166,6 @@ export default function NewPatient() {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-6">
-
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <FormField
                                         control={form.control}
@@ -175,7 +174,12 @@ export default function NewPatient() {
                                             <FormItem>
                                                 <FormLabel>Nome *</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="João" {...field} />
+                                                    <Input
+                                                        placeholder="João"
+                                                        {...field}
+                                                        name="firstName"
+                                                        data-testid="input-firstName"
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -189,7 +193,12 @@ export default function NewPatient() {
                                             <FormItem>
                                                 <FormLabel>Sobrenome *</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="Pedro" {...field} />
+                                                    <Input
+                                                        placeholder="Pedro"
+                                                        {...field}
+                                                        name="lastName"
+                                                        data-testid="input-lastName"
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -212,6 +221,7 @@ export default function NewPatient() {
                                                                 "w-full pl-3 text-left font-normal",
                                                                 !field.value && "text-muted-foreground"
                                                             )}
+                                                            data-testid="input-dateOfBirth"
                                                         >
                                                             {field.value
                                                                 ? format(field.value, "PPP", { locale: ptBR })
@@ -233,16 +243,14 @@ export default function NewPatient() {
                                                             date > new Date() || date < new Date("1900-01-01")
                                                         }
                                                         initialFocus
+                                                        data-testid="calendar-dateOfBirth"
                                                     />
-
                                                 </PopoverContent>
                                             </Popover>
-
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-
 
                                 <FormField
                                     control={form.control}
@@ -254,6 +262,8 @@ export default function NewPatient() {
                                                 <Input
                                                     maxLength={15}
                                                     placeholder="(11) 98765-4321"
+                                                    name="phone"
+                                                    data-testid="input-phone"
                                                     value={mask(field.value, ["(99) 99999-9999"])}
                                                     onChange={(e) => {
                                                         const raw = unmask(e.target.value);
@@ -266,7 +276,6 @@ export default function NewPatient() {
                                     )}
                                 />
 
-
                                 <FormField
                                     control={form.control}
                                     name="cpf"
@@ -277,6 +286,8 @@ export default function NewPatient() {
                                                 <Input
                                                     maxLength={14}
                                                     placeholder="000.000.000-00"
+                                                    name="cpf"
+                                                    data-testid="input-cpf"
                                                     value={mask(field.value, ["999.999.999-99"])}
                                                     onChange={(e) => {
                                                         const rawValue = unmask(e.target.value);
@@ -297,7 +308,7 @@ export default function NewPatient() {
                                             <FormLabel>Gênero *</FormLabel>
                                             <Select onValueChange={field.onChange} value={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger className="w-full">
+                                                    <SelectTrigger className="w-full" data-testid="select-gender">
                                                         <SelectValue placeholder="Selecione o gênero" />
                                                     </SelectTrigger>
                                                 </FormControl>
@@ -313,11 +324,9 @@ export default function NewPatient() {
                                         </FormItem>
                                     )}
                                 />
-
-
                             </div>
-                            <div className="space-y-6">
 
+                            <div className="space-y-6">
                                 <FormField
                                     control={form.control}
                                     name="email"
@@ -325,7 +334,13 @@ export default function NewPatient() {
                                         <FormItem>
                                             <FormLabel>Email *</FormLabel>
                                             <FormControl>
-                                                <Input type="email" placeholder="joaopedro@exemplo.com" {...field} />
+                                                <Input
+                                                    type="email"
+                                                    placeholder="joaopedro@exemplo.com"
+                                                    {...field}
+                                                    name="email"
+                                                    data-testid="input-email"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -339,17 +354,20 @@ export default function NewPatient() {
                                         <FormItem>
                                             <FormLabel>Senha *</FormLabel>
                                             <FormControl>
-                                                <div
-                                                    className="relative flex items-center">
+                                                <div className="relative flex items-center">
                                                     <Input
                                                         type={passwordVisible ? "text" : "password"}
-                                                        placeholder="Teste@123" {...field} />
+                                                        placeholder="Teste@123"
+                                                        {...field}
+                                                        name="password"
+                                                        data-testid="input-password"
+                                                    />
                                                     <Button
                                                         variant="link"
                                                         type="button"
                                                         onClick={togglePasswordVisibility}
                                                         className="cursor-pointer absolute right-0 top-0"
-                                                        aria-label="Mostrar senha"
+                                                        data-testid="toggle-password-visibility"
                                                     >
                                                         {passwordVisible ? <EyeOff size={20} /> : <Eye size={20} />}
                                                     </Button>
@@ -362,7 +380,7 @@ export default function NewPatient() {
                                                             form.setValue("password", generatedPassword);
                                                         }}
                                                         className="cursor-pointer absolute right-8 top-0"
-                                                        aria-label="Gerar senha automaticamente"
+                                                        data-testid="generate-password"
                                                     >
                                                         <WandSparkles />
                                                     </Button>
@@ -372,6 +390,7 @@ export default function NewPatient() {
                                         </FormItem>
                                     )}
                                 />
+
                                 <FormField
                                     control={form.control}
                                     name="weight"
@@ -383,6 +402,8 @@ export default function NewPatient() {
                                                     placeholder="80.5"
                                                     inputMode="decimal"
                                                     pattern="^\d{1,3}(\.\d)?$"
+                                                    name="weight"
+                                                    data-testid="input-weight"
                                                     value={field.value}
                                                     onChange={(e) => {
                                                         const value = e.target.value;
@@ -397,9 +418,6 @@ export default function NewPatient() {
                                     )}
                                 />
 
-
-
-
                                 <FormField
                                     control={form.control}
                                     name="height"
@@ -409,6 +427,8 @@ export default function NewPatient() {
                                             <FormControl>
                                                 <Input
                                                     placeholder="1.75"
+                                                    name="height"
+                                                    data-testid="input-height"
                                                     value={mask(field.value, ["9.99"])}
                                                     onChange={(e) => {
                                                         field.onChange(e.target.value);
@@ -420,7 +440,6 @@ export default function NewPatient() {
                                     )}
                                 />
 
-
                                 <FormField
                                     control={form.control}
                                     name="observations"
@@ -428,7 +447,13 @@ export default function NewPatient() {
                                         <FormItem>
                                             <FormLabel>Observações</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="" className="resize-none h-25" {...field} />
+                                                <Textarea
+                                                    placeholder=""
+                                                    className="resize-none h-25"
+                                                    {...field}
+                                                    name="observations"
+                                                    data-testid="input-observations"
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -437,16 +462,32 @@ export default function NewPatient() {
                             </div>
                         </div>
 
+
                         <div className="flex justify-between gap-4">
                             <Link href="/dashboard/professional/">
-                                <Button type="submit" variant={"cancel"} className="w-50 cursor-pointer" disabled={isSubmitting}>
+                                <Button
+                                    type="submit"
+                                    variant="cancel"
+                                    className="w-50 cursor-pointer"
+                                    disabled={isSubmitting}
+                                    name="cancel-button"
+                                    data-testid="button-cancel"
+                                >
                                     {isSubmitting ? "Cancelando..." : "Cancelar"}
                                 </Button>
                             </Link>
-                            <Button variant={"primary"} type="submit" className="w-50" disabled={isSubmitting}>
+                            <Button
+                                variant="primary"
+                                type="submit"
+                                className="w-50"
+                                disabled={isSubmitting}
+                                name="submit-button"
+                                data-testid="button-submit"
+                            >
                                 {isSubmitting ? "Cadastrando..." : "Cadastrar"}
                             </Button>
                         </div>
+
 
                     </form>
                 </Form>
