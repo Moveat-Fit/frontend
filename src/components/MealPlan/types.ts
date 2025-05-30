@@ -12,6 +12,7 @@ export interface Meal {
   time: string
   foods: FoodItem[]
   notes: string
+  
 }
 
 export interface PatientDetails {

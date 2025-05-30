@@ -24,7 +24,6 @@ export default function MealPlanForm() {
 
         if (!patient) return;
 
-        console.log("Dados do paciente:", response);
       } catch (error) {
         console.error("Erro ao buscar dados do paciente:", error);
       }

@@ -11,29 +11,35 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { PatientDetailsProps } from "@/services/patient/types";
+import { useEffect, useMemo } from "react";
 
 type PatientDetails = {
     patientData?: PatientDetailsProps;
 }
 
 export default function MealPlanDetails({ patientData }: PatientDetails) {
-    const methods = useForm({
-        defaultValues: {
-            patientName: patientData?.full_name ?? "Nome não informado",
-            weight: patientData?.weight?.toString() ?? "Peso não informado",
-            height: patientData?.height?.toString() ?? "Altura não informada",
-            planName: "",
-            startDate: null,
-            endDate: null,
-            goals: ""
-        }
-    })
+    const defaultValues = useMemo(() => ({
+        patientName: patientData?.full_name ?? "Nome não informado",
+        weight: patientData?.weight?.toString() ?? "Peso não informado",
+        height: patientData?.height?.toString() ?? "Altura não informada",
+        planName: "",
+        startDate: null,
+        endDate: null,
+        goals: ""
+    }), [patientData]);
+
+    const methods = useForm({ defaultValues });
 
     const { control } = methods;
+    useEffect(() => {
+        if (patientData) methods.reset(defaultValues);
+    }, [patientData, methods, defaultValues]);
+
 
     const onSubmit = (data: unknown) => {
         console.log("Form Data:", data);
     };
+
 
     return (
         <Card className="mb-6 ">
@@ -53,15 +59,15 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                             <FormField
                                                 control={control}
                                                 name="patientName"
-                                                render={() => (
+                                                render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Nome completo do Paciente</FormLabel>
+                                                        <FormLabel className="text-xs">Nome completo do Paciente</FormLabel>
                                                         <FormControl>
                                                             <Input
                                                                 id="patientName"
                                                                 placeholder="Digite o nome completo"
-                                                                value={methods.getValues("patientName")}
                                                                 disabled
+                                                                {...field}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -74,15 +80,16 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                             <FormField
                                                 control={control}
                                                 name="weight"
-                                                render={() => (
+                                                render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Peso (kg)</FormLabel>
+                                                        <FormLabel className="text-xs">Peso (kg)</FormLabel>
                                                         <FormControl>
                                                             <Input
                                                                 id="weight"
                                                                 type="text"
                                                                 placeholder="Ex: 70"
                                                                 disabled
+                                                                {...field}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -95,15 +102,16 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                             <FormField
                                                 control={control}
                                                 name="height"
-                                                render={() => (
+                                                render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Altura</FormLabel>
+                                                        <FormLabel className="text-xs">Altura</FormLabel>
                                                         <FormControl>
                                                             <Input
                                                                 id="height"
                                                                 type="text"
                                                                 placeholder="Ex: 1.75"
                                                                 disabled
+                                                                {...field}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -127,7 +135,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                 name="planName"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Título do plano alimentar</FormLabel>
+                                                        <FormLabel className="text-xs">Título do plano alimentar</FormLabel>
                                                         <FormControl>
                                                             <Input
                                                                 id="planName"
@@ -148,7 +156,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                     name="startDate"
                                                     render={({ field }) => (
                                                         <FormItem className="flex flex-col">
-                                                            <FormLabel >Início do plano*</FormLabel>
+                                                            <FormLabel className="text-xs">Início do plano*</FormLabel>
                                                             <Popover>
                                                                 <PopoverTrigger asChild>
                                                                     <FormControl>
@@ -194,7 +202,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                     name="endDate"
                                                     render={({ field }) => (
                                                         <FormItem className="flex flex-col">
-                                                            <FormLabel>Término do plano*</FormLabel>
+                                                            <FormLabel className="text-xs">Término do plano*</FormLabel>
                                                             <Popover>
                                                                 <PopoverTrigger asChild>
                                                                     <FormControl>
@@ -242,7 +250,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                 name="goals"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel>Instruções ou observações adicionais</FormLabel>
+                                                        <FormLabel className="text-xs">Instruções ou observações adicionais</FormLabel>
                                                         <FormControl>
                                                             <Textarea
                                                                 id="specialInstructions"

@@ -1,5 +1,4 @@
-import { Meal } from './types'
-import { Label } from "@radix-ui/react-dropdown-menu"
+import { FoodItem, Meal } from './types'
 import { Clock, Plus, Trash2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card"
@@ -17,7 +16,8 @@ export default function DailyMealSchedule() {
             mealTypeName: "",
             timeScheduled: "",
             notes: "",
-    }})
+        }
+    })
 
     const { control } = methods;
 
@@ -41,6 +41,37 @@ export default function DailyMealSchedule() {
 
     const removeMeal = (mealId: string) => {
         setMeals(meals.filter((meal) => meal.id !== mealId))
+    }
+    const addFoodToMeal = (mealId: string) => {
+        const newFood: FoodItem = {
+            id: Date.now().toString(),
+            name: "",
+            portion: "",
+            calories: "",
+            notes: "",
+        }
+        setMeals(meals.map((meal) => (meal.id === mealId ? { ...meal, foods: [...meal.foods, newFood] } : meal)))
+    }
+
+    const removeFoodFromMeal = (mealId: string, foodId: string) => {
+        setMeals(
+            meals.map((meal) =>
+                meal.id === mealId ? { ...meal, foods: meal.foods.filter((food) => food.id !== foodId) } : meal,
+            ),
+        )
+    }
+
+    const updateFood = (mealId: string, foodId: string, field: keyof FoodItem, value: string) => {
+        setMeals(
+            meals.map((meal) =>
+                meal.id === mealId
+                    ? {
+                        ...meal,
+                        foods: meal.foods.map((food) => (food.id === foodId ? { ...food, [field]: value } : food)),
+                    }
+                    : meal,
+            ),
+        )
     }
 
 
@@ -74,7 +105,7 @@ export default function DailyMealSchedule() {
                                                     name="mealTypeName"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <Label>Título da Refeição</Label>
+                                                            <FormLabel className="text-xs">Título da Refeição</FormLabel>
                                                             <FormControl>
                                                                 <Input
                                                                     placeholder="Ex: Café da manhã, Almoço"
@@ -92,7 +123,7 @@ export default function DailyMealSchedule() {
                                                     name="timeScheduled"
                                                     render={() => (
                                                         <FormItem>
-                                                            <FormLabel>Horário</FormLabel>
+                                                            <FormLabel className="text-xs">Horário</FormLabel>
                                                             <Input
                                                                 id='time_scheduled'
                                                                 type="time"
@@ -110,6 +141,7 @@ export default function DailyMealSchedule() {
                                                         <FormItem>
                                                             <FormLabel className="text-xs">Notas</FormLabel>
                                                             <Input
+                                                                placeholder='Ex: Incluir frutas, evitar açúcar'
                                                                 type="text"
                                                             />
                                                         </FormItem>
@@ -126,7 +158,13 @@ export default function DailyMealSchedule() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <AddFoodToMeal meal={meal} />
+                                    <AddFoodToMeal
+                                        key={meal.id}
+                                        meal={meal}
+                                        onAddFood={addFoodToMeal}
+                                        onRemoveFood={removeFoodFromMeal}
+                                        onUpdateFood={updateFood}
+                                    />
                                 </CardContent>
                             </Card>
                         ))}
