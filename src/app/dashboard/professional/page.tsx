@@ -1,7 +1,7 @@
 "use client"
 
 import { SetStateAction, useCallback, useEffect, useState } from "react";
-import { ChevronDown, Download, FileText, Filter, MoreHorizontal, RefreshCw, Search, UserPlus, } from "lucide-react";
+import { ChevronDown, Download, Filter, RefreshCw, Search, SquarePen, Trash2, UserPlus, Utensils, } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, } from "@/components/ui/pagination";
-import { deletePatientService, professionalReadAllPatientService } from "@/services/authService";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { showToastError, showToastSuccess } from "@/utils/toast";
 import { getProfessionalName } from "@/utils/tokenUtil";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { deletePatientService } from "@/services/patient/patientService";
+import { professionalReadAllPatientService } from "@/services/professional/professionalService";
 
 type PatientInterface = {
     id: number
@@ -88,9 +90,8 @@ export default function AllPatients() {
     const greetings = professionalNameFirstPart
         ? `Olá, ${professionalNameFirstPart.charAt(0).toUpperCase() + String(professionalNameFirstPart).slice(1)}!`
         : "Olá!";
-        
+
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [openMenuPatientId, setOpenMenuPatientId] = useState<number | null>(null);
 
     const getAllPatients = useCallback(async () => {
         try {
@@ -225,67 +226,82 @@ export default function AllPatients() {
                                 <TableHead className="hidden md:table-cell">Idade/Gênero</TableHead>
                                 <TableHead className="hidden lg:table-cell">Contato</TableHead>
                                 <TableHead className="hidden md:table-cell">Observação</TableHead>
-                                <TableHead className="text-right">Ações</TableHead>
+                                <TableHead className="text-center">Ações</TableHead>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
-                            {currentPatients.length > 0 ? (
-                                currentPatients.map((patient) => (
-                                    <TableRow key={patient.id}>
-                                        <TableCell className="font-medium">{patient.id}</TableCell>
-                                        <TableCell>{patient.full_name}</TableCell>
-                                        <TableCell className="hidden md:table-cell">
-                                            {calculateAge(patient.birth_date)} / {checkGender(patient.gender)}
-                                        </TableCell>
-                                        <TableCell className="hidden lg:table-cell">
-                                            <div>{patient.mobile}</div>
-                                            <div className="text-xs text-muted-foreground">{patient.email}</div>
-                                        </TableCell>
-                                        <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>
-                                        <TableCell className="text-right">
-                                            <DropdownMenu
-                                                open={openMenuPatientId === patient.id}
-                                                onOpenChange={(isOpen) =>
-                                                    setOpenMenuPatientId(isOpen ? patient.id : null)
-                                                }
-                                            >
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button className="cursor-pointer" variant="ghost" size="icon">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                        <span className="sr-only">Abrir menu</span>
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                                                    <DropdownMenuItem className="cursor-pointer">
-                                                        <FileText className="mr-2 h-4 w-4" />
-                                                        Ver detalhes
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="cursor-pointer">
-                                                        <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`} passHref>
-                                                            Editar informações do paciente
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onClick={() => handleDeleteClick(patient.id)}
-                                                        className="text-destructive cursor-pointer"
-                                                    >
-                                                        Apagar paciente
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                        <TooltipProvider>
+                            <TableBody>
+                                {currentPatients.length > 0 ? (
+                                    currentPatients.map((patient) => (
+                                        <TableRow key={patient.id}>
+                                            <TableCell className="font-medium">{patient.id}</TableCell>
+                                            <TableCell>{patient.full_name}</TableCell>
+                                            <TableCell className="hidden md:table-cell">
+                                                {calculateAge(patient.birth_date)} / {checkGender(patient.gender)}
+                                            </TableCell>
+                                            <TableCell className="hidden lg:table-cell">
+                                                <div>{patient.mobile}</div>
+                                                <div className="text-xs text-muted-foreground">{patient.email}</div>
+                                            </TableCell>
+                                            <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>
+                                            <TableCell className="text-center space-x-2">
+                                                <Link href={`/dashboard/professional/new-meal-plan/${patient.id}`} passHref>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button variant="ghost" className="text-green-600 hover:text-green-700">
+                                                                <Utensils className="h-4 w-4" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Adicionar plano alimentar</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+
+                                                </Link>
+
+                                                <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`} passHref>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+
+                                                            <Button variant="ghost">
+                                                                <SquarePen className="h-4 w-4" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Editar informações do paciente</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </Link>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+
+
+                                                        <Button
+                                                            onClick={() => handleDeleteClick(patient.id)}
+                                                            variant="ghost"
+                                                            className="text-red-600 hover:text-red-700"
+                                                        >
+                                                            <Trash2 className="h-10 w-10" />
+                                                            <span className="sr-only">Apagar paciente</span>
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Apgar paciente</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TableCell>
+
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={8} className="h-24 text-center">
+                                            Nenhum paciente encontrado
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={8} className="h-24 text-center">
-                                        Nenhum paciente encontrado
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
+                                )}
+                            </TableBody>
+                        </TooltipProvider>
 
                         <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
                             <AlertDialogContent>

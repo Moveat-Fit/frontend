@@ -3,7 +3,7 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
-import { professionalLoginService, LoginResponse, patientlLoginService } from "../../services/authService";
+import { professionalLoginService, patientlLoginService } from "../../services/auth/authService";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,7 @@ import { ToastContainer, toast } from "react-toastify";
 import ToastError from "../ToastError";
 import ToastSuccess from "../ToastSuccess";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { LoginResponse } from "@/services/auth/types";
 
 interface LoginFormData {
     login: string;
@@ -135,7 +136,7 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
 
                     {selectedTab === "professional" && (
                         <>
-                            <Link href="/register">
+                            <Link href="/register" className="text-center">
                                 <Button
                                     variant={"link"}
                                     className="p-6 text-primary-custom hover:text-green-700 duration-100 ease-in"

@@ -16,12 +16,13 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
-import { professionalRegisterNewPatientService, RegisterPatientProps } from "@/services/authService";
 import { mask, unmask } from "remask";
 import { showToastError, showToastSuccess } from "@/utils/toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RegisterPatientProps } from "@/services/professional/types";
+import { professionalRegisterNewPatientService } from "@/services/professional/professionalService";
 
 
 const formSchema = z.object({

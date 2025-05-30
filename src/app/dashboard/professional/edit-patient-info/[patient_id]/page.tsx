@@ -16,12 +16,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
-import { findPatientDataById, PatientDetailsProps, professionalUpdateDataPatientService } from "@/services/authService";
 import { mask, unmask } from "remask";
 import { showToastError, showToastSuccess } from "@/utils/toast";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PatientDetailsProps } from "@/services/patient/types";
+import { professionalUpdateDataPatientService } from "@/services/professional/professionalService";
+import { findPatientDataById } from "@/services/patient/patientService";
 
 
 const formSchema = z.object({
@@ -131,10 +133,6 @@ export default function EditPatientInfoPage() {
             setIsSubmitting(false);
         }
     };
-
-
-
-
 
     useEffect(() => {
         const fetchPatientData = async () => {

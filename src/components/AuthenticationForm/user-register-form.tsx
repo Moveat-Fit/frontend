@@ -9,13 +9,13 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, CheckCircle2, Eye, EyeOff, Loader, XCircle } from "lucide-react"
-import { professionalRegisterService } from '../../services/authService';
 import Link from "next/link"
 import { use, useEffect, useState } from "react"
 import Router from 'next/router';
 import { Checkbox } from '../ui/checkbox';
 import ToastError from '../ToastError';
 import { set } from 'react-hook-form';
+import { professionalRegisterService } from '@/services/professional/professionalService';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>
 
@@ -163,7 +163,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
         <div className={cn("grid gap-6", className)} {...props}>
             <form onSubmit={onSubmit}>
                 <div className="grid gap-2">
-                    <div className="text-center mb-4 space-y-2">
+                    {/* <div className="text-center mb-4 space-y-2">
                         {[
                             { label: "Sou Nutricionista", value: "Nutricionista" },
                             { label: "Sou Personal Trainer", value: "Personal Trainer" },
@@ -177,7 +177,7 @@ export function UserRegisterAuthForm({ className, ...props }: UserAuthFormProps)
                                 <Label htmlFor={item.value}>{item.label}</Label>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
                     <div className="grid gap-2">
                         <div className="flex items-center gap-2">
                             <Input
