@@ -2,18 +2,13 @@
 
 @import "tailwindcss";
 @import "react-day-picker/dist/style.css";
-
-
-
 @plugin "tailwindcss-animate";
-
 @custom-variant dark (&:is(.dark *));
 
 [data-sonner-toast] {
   display: flex !important;
   opacity: 1 !important;
 }
-
 
 @theme {
   --color-primary-custom: #006633;
