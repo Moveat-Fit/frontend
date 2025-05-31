@@ -1,22 +1,29 @@
+export type FormValues = {
+  meals: Meal[];
+};
+
 export interface FoodItem {
   id: string
   name: string
   portion: string
   calories: string
   notes: string
+  unit_measure: string
 }
 
 export interface Meal {
-  id: string
+  id?: string
   name: string
   time: string
   foods: FoodItem[]
   notes: string
-  
+
 }
 
 export interface PatientDetails {
-    patientName: string
-    weight: string
-    height: string
+  patientName: string
+  weight: string
+  height: string
 }
+
+

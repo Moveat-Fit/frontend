@@ -35,12 +35,17 @@ export default function MealPlanForm() {
   }, [patient_id]);
 
   const form = useForm({
-    defaultValues: {}
+    defaultValues: {
+      meals: [
+        //adicioanr refeicoes padroes aq
+      ],
+    }
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Complete meal plan registered:")
+  
+
+  const onSubmit = () => {
+    console.log("Complete meal plan registered: ", form.getValues());
   }
 
   return (
@@ -55,27 +60,30 @@ export default function MealPlanForm() {
           </div>
 
           <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
 
 
-            <MealPlanDetails patientData={patientData} />
+              <MealPlanDetails patientData={patientData} />
+              <DailyMealSchedule />
 
-            <DailyMealSchedule />
 
+              <div className="flex justify-between items-center space-x-4 ">
+                <div className="text-center">
+                  <Button variant={"cancel"}>
+                    Cancelar plano alimentar
+                  </Button>
+                </div>
+                <div className="text-center">
+                  <Button type="submit" variant={"primary"}>
+                    Salvar plano alimentar
+                  </Button>
+                </div>
+              </div>
+            </form>
 
           </FormProvider>
 
-          <div className="flex justify-between items-center space-x-4 ">
-            <div className="text-center">
-              <Button onClick={handleSubmit} variant={"cancel"}>
-                Cancelar plano alimentar
-              </Button>
-            </div>
-            <div className="text-center">
-              <Button onClick={handleSubmit} variant={"primary"}>
-                Salvar plano alimentar
-              </Button>
-            </div>
-          </div>
+
         </div>
       </div>
     </div >
