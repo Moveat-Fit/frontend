@@ -118,10 +118,6 @@ export const professionalUpdateDataPatientService = async (
             error?.message ||
             "Erro ao atualizar o paciente.";
 
-        // Remova o toast daqui (deixe para o onSubmit exibir)
-        // showToastError(apiMessage);
-
-        // Rejoga o erro para o onSubmit lidar
         throw new Error(apiMessage);
     }
 };

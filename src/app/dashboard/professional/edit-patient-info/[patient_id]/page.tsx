@@ -249,7 +249,7 @@ export default function EditPatientInfoPage() {
                                                         onSelect={field.onChange}
                                                         captionLayout="dropdown"
                                                         fromYear={1950}
-                                                        toYear={new Date().getFullYear()}
+                                                        toYear={new Date().getFullYear() - 1}
                                                         locale={ptBR}
                                                         disabled={(date) =>
                                                             date > new Date() || date < new Date("1900-01-01")

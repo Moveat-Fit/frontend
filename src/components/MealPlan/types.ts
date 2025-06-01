@@ -11,6 +11,18 @@ export interface FoodItem {
   unit_measure: string
 }
 
+export type FoodListItem = {
+  id: number;
+  name: string;
+  food_group: string;
+  default_portion: {
+    energy_value_kcal: number;
+    grams: number;
+    portion: number;
+    unit_measure: string;
+  };
+};
+
 export interface Meal {
   id?: string
   name: string
@@ -25,5 +37,18 @@ export interface PatientDetails {
   weight: string
   height: string
 }
+
+export type FoodOption = {
+  id: number;
+  name: string;
+  food_group: string;
+  default_portion: {
+    grams: number;
+    energy_value_kcal: number;
+    portion: number;
+    unit_measure: string;
+  };
+};
+
 
 

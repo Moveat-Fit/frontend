@@ -1,21 +1,39 @@
 "use client"
 
 import { useFormContext, useFieldArray } from "react-hook-form"
-import { FoodItem, FormValues, Meal } from "./types"
+import { FoodItem, FoodOption, FormValues, Meal } from "./types"
 import { Clock, Plus, Trash2 } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card"
 import { FormField, FormItem, FormControl, FormMessage, FormLabel } from "../ui/form"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import AddFoodToMeal from "./add-food-to-meal"
+import { useEffect, useState } from "react"
+import { fetchFoodList } from "@/services/meal-plan/mealPlansService"
 
 export default function DailyMealSchedule() {
+    const [foodList, setFoodList] = useState<FoodOption[]>([]);
+
     const { control } = useFormContext<FormValues>()
 
     const { fields: meals, append, remove, update } = useFieldArray({
         control,
         name: "meals",
     })
+
+    useEffect(() => {
+        const fetchFoods = async () => {
+            try {
+                const response = await fetchFoodList();
+                setFoodList(response);
+                console.log("Lista de alimentos:", response);
+            } catch (error) {
+                console.error("Erro ao buscar dados do paciente:", error);
+            }
+        };
+
+        fetchFoods();
+    }, []);
 
     const addMeal = () => {
         append({
@@ -171,6 +189,7 @@ export default function DailyMealSchedule() {
                                 </CardHeader>
                                 <CardContent>
                                     <AddFoodToMeal
+                                        foodList={foodList}
                                         mealIndex={mealIndex}
                                         meal={meal}
                                         onAddFood={addFoodToMeal}

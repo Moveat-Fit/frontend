@@ -3,10 +3,13 @@ import { Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
-import { FoodItem, Meal } from "./types";
+import { FoodItem, FoodListItem, Meal } from "./types";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import FoodCombobox from "./food-combobox";
+import { FoodReactiveCalories } from "./food-reactive-calories";
 
 type AddFoodToMealProps = {
+    foodList: FoodListItem[]
     mealIndex: number
     meal: Meal
     onAddFood: (mealIndex: number) => void
@@ -14,8 +17,8 @@ type AddFoodToMealProps = {
     onUpdateFood: (mealIndex: number, foodIndex: number, field: keyof FoodItem, value: string) => void
 }
 
-export default function AddFoodToMeal({ mealIndex }: AddFoodToMealProps) {
-    const { control } = useFormContext();
+export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProps) {
+    const { control, setValue } = useFormContext();
 
     const { fields: foods, append, remove: removeFood } = useFieldArray({
         control,
@@ -39,28 +42,35 @@ export default function AddFoodToMeal({ mealIndex }: AddFoodToMealProps) {
                     {foods.map((food, foodIndex) => (
                         <div key={food.id} className="flex no-wrap gap-3 p-3 bg-gray-50 rounded-lg">
                             <div className="space-y-1">
+                                <>
+                                    <FormField
+                                        control={control}
+                                        name={`meals.${mealIndex}.foods.${foodIndex}.name`}
+                                        render={() => (
+                                            <FoodCombobox
+                                                control={control}
+                                                name={`meals.${mealIndex}.foods.${foodIndex}.name`}
+                                                label="Nome do alimento"
+                                                options={foodList}
+                                                onSelect={(item) => {
+                                                    const defaultPortion = item.default_portion;
+                                                    const unitMeasure = defaultPortion.unit_measure.toString();
+                                                    const capitalizedUnitMeasure = unitMeasure.charAt(0).toUpperCase() + unitMeasure.slice(1);
 
-                                <FormField
-                                    control={control}
-                                    name={`meals.${mealIndex}.foods.${foodIndex}.name`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs">Nome do alimento</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Ex: Arroz"
-                                                    {...field} // integra com react-hook-form
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
+                                                    setValue(`meals.${mealIndex}.foods.${foodIndex}.portion`, defaultPortion.portion.toString());
+                                                    setValue(`meals.${mealIndex}.foods.${foodIndex}.unit_measure`, capitalizedUnitMeasure);
+                                                    setValue(`meals.${mealIndex}.foods.${foodIndex}.base_portion`, defaultPortion.portion);
+                                                    setValue(`meals.${mealIndex}.foods.${foodIndex}.base_calories`, defaultPortion.energy_value_kcal);
+                                                    setValue(`meals.${mealIndex}.foods.${foodIndex}.calories`, defaultPortion.energy_value_kcal); // valor padrão inicial
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                    <FoodReactiveCalories mealIndex={mealIndex} foodIndex={foodIndex} />
 
+                                </>
                             </div>
                             <div className="space-y-1">
-
-
                                 <FormField
                                     control={control}
                                     name={`meals.${mealIndex}.foods.${foodIndex}.portion`}
@@ -88,7 +98,8 @@ export default function AddFoodToMeal({ mealIndex }: AddFoodToMealProps) {
                                             <FormLabel className="text-xs">Unidade de medida</FormLabel>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="Ex: gramas"
+                                                    placeholder="Selecione um alimento"
+                                                    disabled
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -108,7 +119,8 @@ export default function AddFoodToMeal({ mealIndex }: AddFoodToMealProps) {
                                                 <Input
                                                     {...field}
                                                     type="number"
-                                                    placeholder="Ex: 150"
+                                                    placeholder="Selecione um alimento"
+                                                    disabled
                                                 />
                                             </FormControl>
                                         </FormItem>
