@@ -67,7 +67,6 @@ export function NavMain({
               </SidebarMenuItem>
             </Collapsible>
           ) : (
-            // Sem subitens → redireciona
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 tooltip={item.title}

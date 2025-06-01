@@ -1,10 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-  Users,
-  LayoutDashboard,
-} from "lucide-react"
+import { Users } from "lucide-react"
 
 import {
   Sidebar,
@@ -18,13 +15,6 @@ import { NavUser } from "./nav-user"
 import { getProfessionalEmail, getProfessionalName } from "@/utils/tokenUtil"
 
 const navItems = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-    isActive: true,
-    items: [],
-  },
   {
     title: "Meus Pacientes",
     url: "/dashboard/professional",
