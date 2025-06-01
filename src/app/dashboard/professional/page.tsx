@@ -113,7 +113,6 @@ export default function AllPatients() {
 
     const patientsPerPage = 5
 
-    // Filter patients based on search term and status
     const filteredPatients = patients.filter((patient) => {
         const matchesSearch =
             patient.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -246,7 +245,7 @@ export default function AllPatients() {
                                             <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>
                                             <TableCell className="text-center space-x-2">
                                                 <Link href={`/dashboard/professional/new-meal-plan/${patient.id}`} passHref>
-                                                    <Tooltip>
+                                                    <Tooltip data-testid="link-addNewMealPlan">
                                                         <TooltipTrigger asChild>
                                                             <Button variant="ghost" className="text-green-600 hover:text-green-700">
                                                                 <Utensils className="h-4 w-4" />
@@ -256,11 +255,10 @@ export default function AllPatients() {
                                                             <p>Adicionar plano alimentar</p>
                                                         </TooltipContent>
                                                     </Tooltip>
-
                                                 </Link>
 
                                                 <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`} passHref>
-                                                    <Tooltip>
+                                                    <Tooltip data-testid="link-editPatientInfo">
                                                         <TooltipTrigger asChild>
 
                                                             <Button variant="ghost">
@@ -272,10 +270,8 @@ export default function AllPatients() {
                                                         </TooltipContent>
                                                     </Tooltip>
                                                 </Link>
-                                                <Tooltip>
+                                                <Tooltip data-testid="button-deletePatient">
                                                     <TooltipTrigger asChild>
-
-
                                                         <Button
                                                             onClick={() => handleDeleteClick(patient.id)}
                                                             variant="ghost"
@@ -320,7 +316,7 @@ export default function AllPatients() {
                                             if (selectedPatientId !== null) {
                                                 await deletePatient(selectedPatientId.toString());
                                                 setDialogOpen(false);
-                                                getAllPatients(); // Recarrega a lista
+                                                getAllPatients();
                                                 showToastSuccess("Paciente removido com sucesso!");
                                             }
                                         }}
@@ -351,7 +347,6 @@ export default function AllPatients() {
                                 </PaginationItem>
 
                                 {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                                    // Logic to show pages around current page
                                     let pageToShow
                                     if (totalPages <= 5) {
                                         pageToShow = i + 1

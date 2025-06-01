@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { FormControl } from "@/components/ui/form";
+import { FormControl, FormMessage } from "@/components/ui/form";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -66,6 +66,8 @@ export default function FoodCombobox({ control, name, label, options, onSelect }
                                     </Button>
 
                                 </FormControl>
+
+
                             </PopoverTrigger>
                             <PopoverContent className="w-[200px] max-h-[300px] p-0 overflow-auto">
                                 <Command>
@@ -95,6 +97,7 @@ export default function FoodCombobox({ control, name, label, options, onSelect }
                                 </Command>
                             </PopoverContent>
                         </Popover>
+                        <FormMessage />
                     </div>
                 );
             }}

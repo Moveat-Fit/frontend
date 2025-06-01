@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/no-unescaped-entities */
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
-import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { FoodItem, FoodListItem, Meal } from "./types";
 import { useFieldArray, useFormContext } from "react-hook-form";
@@ -18,12 +19,18 @@ type AddFoodToMealProps = {
 }
 
 export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProps) {
-    const { control, setValue } = useFormContext();
+    const form = useFormContext();
+    const { control, setValue, formState: { errors } } = form;
 
     const { fields: foods, append, remove: removeFood } = useFieldArray({
         control,
         name: `meals.${mealIndex}.foods`,
     });
+
+    const foodsError =
+        Array.isArray(errors.meals) && errors.meals[mealIndex]
+            ? (errors.meals[mealIndex] as any)?.foods
+            : undefined;
 
     return (
         <div className="space-y-4">
@@ -36,7 +43,9 @@ export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProp
             </div>
 
             {foods.length === 0 ? (
-                <p className="text-gray-500 text-sm italic">Nenhum alimento adicionado ainda. Clique em "Adicionar alimento" para começar.</p>
+                <p className={`text-sm italic ${foodsError ? "text-red-500" : "text-muted-foreground"}`}>
+                    Nenhum alimento adicionado ainda. Clique em "Adicionar alimento" para começar.
+                </p>
             ) : (
                 <div className="space-y-3">
                     {foods.map((food, foodIndex) => (
@@ -44,6 +53,7 @@ export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProp
                             <div className="space-y-1">
                                 <>
                                     <FormField
+                                        data-testid="input-foodName"
                                         control={control}
                                         name={`meals.${mealIndex}.foods.${foodIndex}.name`}
                                         render={() => (
@@ -61,13 +71,12 @@ export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProp
                                                     setValue(`meals.${mealIndex}.foods.${foodIndex}.unit_measure`, capitalizedUnitMeasure);
                                                     setValue(`meals.${mealIndex}.foods.${foodIndex}.base_portion`, defaultPortion.portion);
                                                     setValue(`meals.${mealIndex}.foods.${foodIndex}.base_calories`, defaultPortion.energy_value_kcal);
-                                                    setValue(`meals.${mealIndex}.foods.${foodIndex}.calories`, defaultPortion.energy_value_kcal); // valor padrão inicial
+                                                    setValue(`meals.${mealIndex}.foods.${foodIndex}.calories`, defaultPortion.energy_value_kcal);
                                                 }}
                                             />
                                         )}
                                     />
                                     <FoodReactiveCalories mealIndex={mealIndex} foodIndex={foodIndex} />
-
                                 </>
                             </div>
                             <div className="space-y-1">
@@ -79,10 +88,12 @@ export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProp
                                             <FormLabel className="text-xs">Porção</FormLabel>
                                             <FormControl>
                                                 <Input
+                                                    data-testid="input-foodPortion"
                                                     placeholder="Ex: 100g, 1 xícara"
                                                     {...field}
                                                 />
                                             </FormControl>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
@@ -98,11 +109,14 @@ export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProp
                                             <FormLabel className="text-xs">Unidade de medida</FormLabel>
                                             <FormControl>
                                                 <Input
+                                                    data-testid="input-foodUnitMeasure"
+                                                    className="truncate"
                                                     placeholder="Selecione um alimento"
                                                     disabled
                                                     {...field}
                                                 />
                                             </FormControl>
+
                                         </FormItem>
                                     )}
                                 />
@@ -117,20 +131,22 @@ export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProp
                                             <FormLabel className="text-xs">Valor energético (kcal)</FormLabel>
                                             <FormControl>
                                                 <Input
+                                                    data-testid="input-foodCalories"
                                                     {...field}
                                                     type="number"
-                                                    placeholder="Selecione um alimento"
                                                     disabled
                                                 />
                                             </FormControl>
                                         </FormItem>
                                     )}
                                 />
+                                <FormMessage />
 
                             </div>
 
-                            <div className="flex items-end">
+                            <div className="flex items-center h-max justify-center relative top-6">
                                 <Button
+                                    data-testid={`button-removeFood`}
                                     type="button"
                                     onClick={() => removeFood(foodIndex)}
                                     variant="ghost"

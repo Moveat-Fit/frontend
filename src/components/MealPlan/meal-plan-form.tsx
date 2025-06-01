@@ -9,6 +9,8 @@ import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import MealPlanDetails from "./meal-plan-details"
 import DailyMealSchedule from "./daily-meal-schedule"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { MealPlanFormData, mealPlanSchema } from "@/schemas/meal-plan-schema"
 
 export default function MealPlanForm() {
   const { patient_id } = useParams();
@@ -34,15 +36,17 @@ export default function MealPlanForm() {
     }
   }, [patient_id]);
 
-  const form = useForm({
+  const form = useForm<MealPlanFormData>({
+    resolver: zodResolver(mealPlanSchema),
     defaultValues: {
-      meals: [
-        //adicioanr refeicoes padroes aq
-      ],
-    }
-  })
+      planName: "",
+      startDate: undefined,
+      endDate: undefined,
+      goals: "",
+      meals: [],
+    },
+  });
 
-  
 
   const onSubmit = () => {
     console.log("Complete meal plan registered: ", form.getValues());

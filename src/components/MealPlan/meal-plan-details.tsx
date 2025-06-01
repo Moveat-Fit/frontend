@@ -57,13 +57,13 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                 <FormLabel className="text-xs">Nome completo do Paciente</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        data-testid="input-patientName"
                                                         id="patientName"
                                                         placeholder="Digite o nome completo"
                                                         disabled
                                                         {...field}
                                                     />
                                                 </FormControl>
-                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -78,6 +78,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                 <FormLabel className="text-xs">Peso (kg)</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        data-testid="input-patientWeight"
                                                         id="weight"
                                                         type="text"
                                                         placeholder="Ex: 70"
@@ -100,6 +101,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                 <FormLabel className="text-xs">Altura</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        data-testid="input-patientHeight"
                                                         id="height"
                                                         type="text"
                                                         placeholder="Ex: 1.75"
@@ -121,29 +123,31 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                 <h3 className="text-lg font-semibold text-gray-800">Detalhes do plano alimentar</h3>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-2">
                                 <div className="space-y-2">
                                     <FormField
                                         control={control}
                                         name="planName"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel className="text-xs">Título do plano alimentar</FormLabel>
+                                                <FormLabel className="text-xs">Título do plano alimentar *</FormLabel>
                                                 <FormControl>
                                                     <Input
+                                                        data-testid="input-planName"
                                                         id="planName"
                                                         placeholder="Ex: Dieta para perda de peso"
                                                         {...field}
                                                     />
                                                 </FormControl>
-                                                <FormMessage />
+                                                <div className="text-blue-500">
+                                                    <FormMessage />
+                                                </div>
                                             </FormItem>
                                         )}
                                     />
-
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="space-y-2">
                                         <FormField
                                             name="startDate"
@@ -159,7 +163,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                                         "w-full pl-3 text-left font-normal",
                                                                         !field.value && "text-muted-foreground"
                                                                     )}
-                                                                    data-testid="input-startDate"
+                                                                    data-testid="input-startDatePlan"
                                                                 >
                                                                     {field.value
                                                                         ? format(field.value, "PPP", { locale: ptBR })
@@ -195,7 +199,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                         />
                                     </div>
 
-                                    <div className="space-y-2">
+                                    <div className="space-y-2 mb-2">
                                         <FormField
                                             name="endDate"
                                             render={({ field }) => (
@@ -210,7 +214,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                                         "w-full pl-3 text-left font-normal",
                                                                         !field.value && "text-muted-foreground"
                                                                     )}
-                                                                    data-testid="input-endDate"
+                                                                    data-testid="input-endDatePlan"
                                                                 >
                                                                     {field.value
                                                                         ? format(field.value, "PPP", { locale: ptBR })
@@ -231,7 +235,7 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                                     date < new Date()
                                                                 }
                                                                 initialFocus
-                                                                data-testid="calendar-endDate"
+                                                                data-testid="calendar-endDatePlan"
                                                             />
                                                         </PopoverContent>
                                                     </Popover>
@@ -251,6 +255,8 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
                                                 <FormLabel className="text-xs">Instruções ou observações adicionais</FormLabel>
                                                 <FormControl>
                                                     <Textarea
+                                                        data-testid="input-goalsPlan"
+
                                                         id="specialInstructions"
                                                         placeholder="Inclua restrições, preferências ou instruções especiais"
                                                         rows={3}

@@ -14,7 +14,11 @@ import { fetchFoodList } from "@/services/meal-plan/mealPlansService"
 export default function DailyMealSchedule() {
     const [foodList, setFoodList] = useState<FoodOption[]>([]);
 
-    const { control } = useFormContext<FormValues>()
+    const { control, formState: { errors } } = useFormContext<FormValues>()
+    const mealsError = errors.meals?.root?.message || errors.meals?.message;
+    useEffect(() => {
+        console.log("Meals errors:", errors.meals);
+    }, [errors.meals]);
 
     const { fields: meals, append, remove, update } = useFieldArray({
         control,
@@ -101,12 +105,12 @@ export default function DailyMealSchedule() {
     return (
         <div>
             <div className="space-y-6">
-                <Card className="mb-6">
+                <Card className={`mb-6 ${errors.meals?.message ? "border border-red-500" : ""}`}>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Clock className="h-5 w-5 text-primary-custom" />
-                                <CardTitle className="text-xl text-primary-custom">
+                                <Clock className={`h-5 w-5 ${errors.meals?.message ? " text-red-500" : "text-primary-custom"}`} />
+                                <CardTitle className={`text-xl ${errors.meals?.message ? " text-red-500" : "text-primary-custom"}`}>
                                     Cronograma Diário de Refeições & Alimentos
                                 </CardTitle>
                             </div>
@@ -118,6 +122,11 @@ export default function DailyMealSchedule() {
                         <CardDescription>
                             Planeje refeições específicas com alimentos, porções e horários
                         </CardDescription>
+                        {mealsError && (
+                            <FormMessage className="text-red-500 text-sm">Inclua pelo menos 1 refeição.</FormMessage>
+                        )}
+
+
                     </CardHeader>
 
                     <CardContent className="space-y-6">
@@ -132,7 +141,7 @@ export default function DailyMealSchedule() {
                                                     name={`meals.${mealIndex}.name`}
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel className="text-xs">Título da Refeição</FormLabel>
+                                                            <FormLabel className="text-xs">Título da Refeição *</FormLabel>
                                                             <FormControl>
                                                                 <Input placeholder="Ex: Café da manhã, Almoço" {...field} />
                                                             </FormControl>
@@ -145,15 +154,71 @@ export default function DailyMealSchedule() {
                                                 <FormField
                                                     control={control}
                                                     name={`meals.${mealIndex}.time`}
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-xs">Horário</FormLabel>
-                                                            <FormControl>
-                                                                <Input type="time" {...field} />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
+                                                    render={({ field }) => {
+                                                        const [rawHours, rawMinutes] = field.value ? field.value.split(':') : ['', ''];
+
+                                                        const isValidHour = (val: string) =>
+                                                            /^([0-9]{0,2})$/.test(val) && (val === '' || (parseInt(val) >= 0 && parseInt(val) <= 23));
+                                                        const isValidMinute = (val: string) =>
+                                                            /^([0-9]{0,2})$/.test(val) && (val === '' || (parseInt(val) >= 0 && parseInt(val) <= 59));
+
+                                                        const handleHourChange = (val: string) => {
+                                                            const digits = val.replace(/\D/g, '');
+                                                            if (isValidHour(digits)) {
+                                                                const finalMinutes = rawMinutes || '';
+                                                                const time = digits.length === 2 && finalMinutes.length === 2
+                                                                    ? `${digits.padStart(2, '0')}:${finalMinutes.padStart(2, '0')}`
+                                                                    : `${digits}:${finalMinutes}`;
+                                                                field.onChange(time);
+                                                            }
+                                                        };
+
+                                                        const handleMinuteChange = (val: string) => {
+                                                            const digits = val.replace(/\D/g, '');
+                                                            if (isValidMinute(digits)) {
+                                                                const finalHours = rawHours || '';
+                                                                const time = finalHours.length === 2 && digits.length === 2
+                                                                    ? `${finalHours.padStart(2, '0')}:${digits.padStart(2, '0')}`
+                                                                    : `${finalHours}:${digits}`;
+                                                                field.onChange(time);
+                                                            }
+                                                        };
+
+                                                        return (
+                                                            <FormItem>
+                                                                <FormLabel className="text-xs">Horário *</FormLabel>
+                                                                <FormControl>
+                                                                    <div className="flex gap-2">
+                                                                        <Input
+                                                                            data-testid="input-hourMeal"
+                                                                            type="text"
+                                                                            inputMode="numeric"
+                                                                            maxLength={2}
+                                                                            placeholder="HH"
+                                                                            value={rawHours}
+                                                                            onChange={(e) => handleHourChange(e.target.value)}
+                                                                            className="w-14 text-center"
+                                                                        />
+                                                                        <span className="self-center text-sm">:</span>
+                                                                        <Input
+                                                                            data-testid="input-minutesMeal"
+                                                                            type="text"
+                                                                            inputMode="numeric"
+                                                                            maxLength={2}
+                                                                            placeholder="MM"
+                                                                            value={rawMinutes}
+                                                                            onChange={(e) => handleMinuteChange(e.target.value)}
+                                                                            className="w-14 text-center"
+                                                                        />
+                                                                        <Clock className="h-4 w-4 text-gray-500 self-center" />
+                                                                    </div>
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        );
+                                                    }}
                                                 />
+
+
                                             </div>
                                             <div className="space-y-1">
                                                 <FormField
@@ -164,6 +229,7 @@ export default function DailyMealSchedule() {
                                                             <FormLabel className="text-xs">Notas</FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    data-testid="input-notesMeal"
                                                                     placeholder="Ex: Incluir frutas, evitar açúcar"
                                                                     type="text"
                                                                     {...field}
@@ -200,8 +266,10 @@ export default function DailyMealSchedule() {
                             </Card>
                         ))}
                     </CardContent>
+
                 </Card>
             </div>
+
         </div>
     )
 }
