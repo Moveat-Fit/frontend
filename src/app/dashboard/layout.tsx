@@ -20,7 +20,7 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
                 <BreadcrumbList>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    <BreadcrumbPage>Meus Pacientes</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
