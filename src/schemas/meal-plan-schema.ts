@@ -13,8 +13,15 @@ export const mealPlanSchema = z.object({
             foods: z.array(
                 z.object({
                     name: z.string().min(1, "Selecionar um alimento é obrigatório."),
-                    portion: z.string().min(1, "Porção é obrigatória."),
-                    calories: z.number(),
+                    portion: z.preprocess((val) => {
+                        if (val === "") return undefined;
+                        return Number(val);
+                    }, z.number({
+                        required_error: "Porção é obrigatória.",
+                        invalid_type_error: "Porção deve ser um número válido.",
+                    }).min(1, { message: "Porção deve ser maior que 0." })),
+
+
                     unit_measure: z.string(),
                     notes: z.string().optional()
                 })
