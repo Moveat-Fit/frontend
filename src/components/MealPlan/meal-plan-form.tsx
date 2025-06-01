@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import type React from "react"
@@ -11,6 +12,11 @@ import MealPlanDetails from "./meal-plan-details"
 import DailyMealSchedule from "./daily-meal-schedule"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MealPlanFormData, mealPlanSchema } from "@/schemas/meal-plan-schema"
+import Link from "next/link"
+import { format } from "date-fns"
+import { createMealPlan } from "@/services/meal-plan/mealPlansService";
+import ToastError from "../ToastError"
+import ToastSuccess from "../ToastSuccess"
 
 export default function MealPlanForm() {
   const { patient_id } = useParams();
@@ -48,9 +54,41 @@ export default function MealPlanForm() {
   });
 
 
-  const onSubmit = () => {
-    console.log("Complete meal plan registered: ", form.getValues());
+  const onSubmit = async (data: MealPlanFormData) => {
+    const payload = {
+      patient_id: patient_id,
+      plan_name: data.planName,
+      start_date: format(new Date(data.startDate), "yyyy-MM-dd"),
+      end_date: format(new Date(data.endDate), "yyyy-MM-dd"),
+      goals: data.goals,
+      entries: data.meals.map((meal) => ({
+        meal_type_name: meal.name,
+        day_of_plan: format(new Date(data.startDate), "yyyy-MM-dd"),
+        time_scheduled: meal.time,
+        notes: meal.notes,
+        foods: meal.foods.map((food) => ({
+          food_name: food.name,
+          prescribed_quantity: food.portion,
+          unit_measure: food.unit_measure,
+          energy_value_kcal: food.calories,
+          ...(food.notes && { preparation_notes: food.notes })
+        }))
+      }))
+    };
+
+    try {
+      await createMealPlan(payload);
+      ToastSuccess({ message: "Plano alimentar criado com sucesso!" });
+      form.reset();
+    } catch (error: any) {
+      // Pega a mensagem do erro que você jogou na função createMealPlan
+      const errorMessage = error.message || "Erro ao criar plano alimentar. Verifique os dados e tente novamente.";
+      ToastError({ message: errorMessage });
+      console.error("Erro ao criar plano alimentar:", error);
+    }
+
   }
+
 
   return (
     <div className="min-h-screen bg">
@@ -73,9 +111,11 @@ export default function MealPlanForm() {
 
               <div className="flex justify-between items-center space-x-4 ">
                 <div className="text-center">
-                  <Button variant={"cancel"}>
-                    Cancelar plano alimentar
-                  </Button>
+                  <Link href={`/dashboard/professional`}>
+                    <Button variant={"cancel"}>
+                      Cancelar plano alimentar
+                    </Button>
+                  </Link>
                 </div>
                 <div className="text-center">
                   <Button type="submit" variant={"primary"}>

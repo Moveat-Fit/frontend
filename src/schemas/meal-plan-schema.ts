@@ -20,8 +20,7 @@ export const mealPlanSchema = z.object({
                         required_error: "Porção é obrigatória.",
                         invalid_type_error: "Porção deve ser um número válido.",
                     }).min(1, { message: "Porção deve ser maior que 0." })),
-
-
+                    calories: z.number(),
                     unit_measure: z.string(),
                     notes: z.string().optional()
                 })

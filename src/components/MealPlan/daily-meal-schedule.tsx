@@ -30,7 +30,6 @@ export default function DailyMealSchedule() {
             try {
                 const response = await fetchFoodList();
                 setFoodList(response);
-                console.log("Lista de alimentos:", response);
             } catch (error) {
                 console.error("Erro ao buscar dados do paciente:", error);
             }
