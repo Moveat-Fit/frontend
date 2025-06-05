@@ -14,7 +14,7 @@ export interface RegisterPatientProps {
     gender: string,
     email: string,
     password: string,
-    mobile: string,
+    phone: string,
     cpf: string,
     weight: string,
     height: string,
@@ -50,19 +50,6 @@ export interface UpdatePatientProps {
     cpf: string,
     weight: number,
     height: number,
-    note?: string,
-}
-
-export interface RegisterPatientProps {
-    full_name: string,
-    birth_date: string,
-    gender: string,
-    email: string,
-    password: string,
-    mobile: string,
-    cpf: string,
-    weight: string,
-    height: string,
     note?: string,
 }
 

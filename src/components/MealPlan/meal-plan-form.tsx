@@ -81,14 +81,12 @@ export default function MealPlanForm() {
       ToastSuccess({ message: "Plano alimentar criado com sucesso!" });
       form.reset();
     } catch (error: any) {
-      // Pega a mensagem do erro que você jogou na função createMealPlan
       const errorMessage = error.message || "Erro ao criar plano alimentar. Verifique os dados e tente novamente.";
       ToastError({ message: errorMessage });
       console.error("Erro ao criar plano alimentar:", error);
     }
 
   }
-
 
   return (
     <div className="min-h-screen bg">
@@ -103,12 +101,8 @@ export default function MealPlanForm() {
 
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-
-
               <MealPlanDetails patientData={patientData} />
               <DailyMealSchedule />
-
-
               <div className="flex justify-between items-center space-x-4 ">
                 <div className="text-center">
                   <Link href={`/dashboard/professional`}>

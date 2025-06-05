@@ -3,10 +3,12 @@
 import { AppSidebar } from "@/components/Sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
 import { Separator } from "@radix-ui/react-separator";
 import { ToastContainer } from "react-toastify";
 
 export default function Dashboard({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
   return (
     <main className="ml-9">
       <SidebarProvider>
@@ -20,7 +22,12 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
                 <BreadcrumbList>
                   <BreadcrumbSeparator className="hidden md:block" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage>Meus Pacientes</BreadcrumbPage>
+                    {user?.role === "professional" ? (
+                      <BreadcrumbPage>Meus Pacientes</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    )
+                    }
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>

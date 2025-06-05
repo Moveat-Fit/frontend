@@ -36,7 +36,7 @@ export const professionalRegisterNewPatientService = async (userData: RegisterPa
             gender: userData.gender,
             email: userData.email,
             password: userData.password,
-            mobile: userData.mobile,
+            phone: userData.phone,
             cpf: userData.cpf,
             weight: userData.weight,
             height: userData.height,

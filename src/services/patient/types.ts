@@ -27,6 +27,7 @@ export interface PatientResponse {
 }
 
 export interface PatientDetailsProps {
+    professional_id?: number
     full_name: string;
     birth_date: string;
     gender: 'm' | 'f' | string;

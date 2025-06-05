@@ -13,8 +13,9 @@ import {
 import { NavMain } from "./nav-main"
 import { NavUser } from "./nav-user"
 import { getProfessionalEmail, getProfessionalName } from "@/utils/tokenUtil"
+import { useAuth } from "@/contexts/AuthContext"
 
-const navItems = [
+const navItemsProfessional = [
   {
     title: "Meus Pacientes",
     url: "/dashboard/professional",
@@ -24,8 +25,19 @@ const navItems = [
   },
 ]
 
+const navItemsPatient = [
+  {
+    title: "Dashboard",
+    url: "/dashboard/patient",
+    icon: Users,
+    isActive: false,
+    items: [],
+  },
+]
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = {
+  const { user } = useAuth()
+  const userDetails = {
     name: getProfessionalName() || "Profissional",
     email: getProfessionalEmail() || "",
     avatar: "/default-avatar.png",
@@ -35,10 +47,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader />
       <SidebarContent>
-        <NavMain items={navItems} />
+        <NavMain items={user?.role === "professional" ? navItemsProfessional : navItemsPatient} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={userDetails} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

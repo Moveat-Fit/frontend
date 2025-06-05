@@ -34,7 +34,6 @@ export function getDecodedToken(): CustomPayload | null {
   }
 }
 
-
 export function getProfessionalId(): string | null {
   const decoded = getDecodedToken();
   return decoded?.id ?? null;
@@ -48,4 +47,9 @@ export function getProfessionalName(): string | null {
 export function getProfessionalEmail(): string | null {
   const decoded = getDecodedToken();
   return decoded?.email ?? null;
+}
+
+export function getUserId(): string | null {
+  const decoded = getDecodedToken();
+  return decoded?.id ?? null;
 }

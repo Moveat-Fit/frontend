@@ -17,9 +17,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import ToastError from "../ToastError";
-import ToastSuccess from "../ToastSuccess";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { LoginResponse } from "@/services/auth/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import { DecodedToken } from "./types";
 
 interface LoginFormData {
     login: string;
@@ -27,6 +29,8 @@ interface LoginFormData {
 }
 
 export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => {
+    const { setUser } = useAuth();
+
     const { handleSubmit, control, formState: { errors }, setError, clearErrors } = useForm<LoginFormData>({
         mode: "onSubmit",
     });
@@ -51,8 +55,19 @@ export const UserLoginAuthForm: React.FC<React.HTMLAttributes<HTMLDivElement>> =
                 response = await professionalLoginService(data);
             }
 
+
             localStorage.setItem("access_token", response.access_token);
-            if(selectedTab === "professional") router.push("/dashboard/professional"); 
+            const token = localStorage.getItem("access_token");
+            if (token) {
+                const decoded: DecodedToken = jwtDecode(token);
+                setUser(decoded);
+            }
+
+
+            if (selectedTab === "professional") {
+                router.push("/dashboard/professional");
+            } else router.push("/dashboard/patient");
+
         } catch (error: any) {
             const errorMessage = error?.response?.data?.message || error?.message || "Erro desconhecido";
             ToastError({ message: errorMessage });

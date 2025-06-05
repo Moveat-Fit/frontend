@@ -128,7 +128,7 @@ export default function NewPatient() {
             gender: values.gender,
             email: values.email,
             password: values.password,
-            mobile: values.phone,
+            phone: values.phone,
             cpf: values.cpf,
             weight: values.weight,
             height: values.height,

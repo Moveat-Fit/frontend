@@ -282,7 +282,7 @@ export default function AllPatients() {
                                                         </Button>
                                                     </TooltipTrigger>
                                                     <TooltipContent>
-                                                        <p>Apgar paciente</p>
+                                                        <p>Apagar paciente</p>
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </TableCell>
