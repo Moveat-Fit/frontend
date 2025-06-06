@@ -25,13 +25,14 @@ export default function MealPlanDetails({ patientData }: PatientDetails) {
         weight: patientData?.weight?.toString() ?? "Peso não informado",
         height: patientData?.height?.toString() ?? "Altura não informada",
         planName: "",
-        startDate: "",
-        endDate: "",
+        startDate: undefined,
+        endDate: undefined,
         goals: ""
     }), [patientData]);
 
     useEffect(() => {
         if (patientData) {
+            console.log("Resetando com:", defaultValues);
             reset(defaultValues);
         }
     }, [patientData, reset, defaultValues]);

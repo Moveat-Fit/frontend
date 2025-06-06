@@ -1,9 +1,7 @@
 "use client"
 
 import { SetStateAction, useCallback, useEffect, useState } from "react";
-import { ChevronDown, Download, Filter, RefreshCw, Search, SquarePen, Trash2, UserPlus, Utensils, } from "lucide-react";
-import Link from "next/link";
-
+import { ChevronDown, Download, Filter, Pencil, Plus, RefreshCw, Search, SquarePen, Trash, Trash2, UserPlus, Utensils, } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -16,6 +14,8 @@ import { getProfessionalName } from "@/utils/tokenUtil";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { deletePatientService } from "@/services/patient/patientService";
 import { professionalReadAllPatientService } from "@/services/professional/professionalService";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type PatientInterface = {
     id: number
@@ -56,6 +56,7 @@ function checkGender(gender: string) {
 }
 
 export default function AllPatients() {
+    const router = useRouter()
     const [patients, setPatients] = useState<PatientInterface[]>([])
     const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
 
@@ -244,18 +245,35 @@ export default function AllPatients() {
                                             </TableCell>
                                             <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>
                                             <TableCell className="text-center space-x-2">
-                                                <Link href={`/dashboard/professional/new-meal-plan/${patient.id}`} passHref>
-                                                    <Tooltip data-testid="link-addNewMealPlan">
+                                                <DropdownMenu>
+                                                    <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <Button variant="ghost" className="text-green-600 hover:text-green-700">
-                                                                <Utensils className="h-4 w-4" />
-                                                            </Button>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" className="text-green-600 hover:text-green-700">
+                                                                    <Utensils className="h-4 w-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
                                                         </TooltipTrigger>
                                                         <TooltipContent>
-                                                            <p>Adicionar plano alimentar</p>
+                                                            <p>Plano alimentar</p>
                                                         </TooltipContent>
                                                     </Tooltip>
-                                                </Link>
+
+                                                    <DropdownMenuContent>
+                                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/new-meal-plan/${patient.id}`)}>
+                                                            <Plus className="w-4 h-4 mr-2" />
+                                                            Adicionar plano alimentar
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/edit-meal-plan/${patient.id}`)}>
+                                                            <Pencil className="w-4 h-4 mr-2" />
+                                                            Editar plano alimentar
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/remove-meal-plan/${patient.id}`)}>
+                                                            <Trash className="w-4 h-4 mr-2 text-red-600" />
+                                                            <span className="text-red-600">Remover plano alimentar</span>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
 
                                                 <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`} passHref>
                                                     <Tooltip data-testid="link-editPatientInfo">
