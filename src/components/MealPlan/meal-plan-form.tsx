@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { findPatientDataById } from "@/services/patient/patientService"
 import { PatientDetailsProps } from "@/services/patient/types"
-import { useParams, usePathname } from "next/navigation"
+import { useParams, usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import MealPlanDetails from "./meal-plan-details"
@@ -17,6 +17,7 @@ import ToastError from "../ToastError"
 import ToastSuccess from "../ToastSuccess"
 
 export default function MealPlanForm() {
+  const router = useRouter()
   const pathname = usePathname()
   const isEditing = pathname.includes("edit-meal-plan")
   const { patient_id } = useParams()
@@ -38,39 +39,37 @@ export default function MealPlanForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [patientResponse, mealPlanResponse] = await Promise.all([
-          findPatientDataById(patient_id as string),
-          mealPlanDetails(patient_id as string),
-        ])
-
+        const patientResponse = await findPatientDataById(patient_id as string)
         const patient = patientResponse.patient?.[0]
         setPatientData(patient)
 
-        if (mealPlanResponse?.meal_plan) {
-          const plan = mealPlanResponse.meal_plan
-          setPlanId(plan.id)
+        if (isEditing) {
+          const mealPlanResponse = await mealPlanDetails(patient_id as string)
 
-          form.reset({
-            planName: plan.plan_name,
-            startDate: new Date(plan.start_date),
-            endDate: new Date(plan.end_date),
-            goals: plan.goals ?? "",
-            meals: plan.entries.map((entry: any) => ({
-              name: entry.meal_type_name,
-              time: entry.time_scheduled,
-              notes: entry.notes ?? "",
-              foods: entry.foods.map((food: any) => ({
-                name: food.food_name,
-                portion: food.prescribed_quantity,
-                unit_measure: food.unit_measure,
-                calories: food.energy_value_kcal,
-                notes: food.preparation_notes ?? "",
+          if (mealPlanResponse?.meal_plan) {
+            const plan = mealPlanResponse.meal_plan
+            setPlanId(plan.id)
+
+            form.reset({
+              planName: plan.plan_name,
+              startDate: new Date(plan.start_date),
+              endDate: new Date(plan.end_date),
+              goals: plan.goals ?? "",
+              meals: plan.entries.map((entry: any) => ({
+                name: entry.meal_type_name,
+                time: entry.time_scheduled,
+                notes: entry.notes ?? "",
+                foods: entry.foods.map((food: any) => ({
+                  name: food.food_name,
+                  portion: food.prescribed_quantity,
+                  unit_measure: food.unit_measure,
+                  calories: food.energy_value_kcal,
+                  notes: food.preparation_notes ?? "",
+                })),
               })),
-            })),
-          })
+            })
+          }
         }
-
-        console.log("Meal plan response: ", mealPlanResponse)
       } catch (error) {
         console.error("Erro ao buscar dados:", error)
       } finally {
@@ -78,12 +77,11 @@ export default function MealPlanForm() {
       }
     }
 
-    if (isEditing && patient_id) {
+    if (patient_id) {
       fetchData()
-    } else {
-      setIsLoading(false)
     }
-  }, [isEditing, patient_id])
+  }, [form, isEditing, patient_id])
+
 
   const onSubmit = async (data: MealPlanFormData) => {
     const patientId = patient_id as string
@@ -113,11 +111,13 @@ export default function MealPlanForm() {
       if (isEditing) {
         await updateMealPlan(patientId, payload)
         ToastSuccess({ message: "Plano alimentar atualizado com sucesso!" })
+
       } else {
         await createMealPlan(payload)
         ToastSuccess({ message: "Plano alimentar criado com sucesso!" })
         form.reset()
       }
+      router.push("/dashboard/professional")
     } catch (error: any) {
       const errorMessage = error.message || "Erro ao salvar plano alimentar. Verifique os dados."
       ToastError({ message: errorMessage })
@@ -125,9 +125,10 @@ export default function MealPlanForm() {
     }
   }
 
-  if (isLoading) {
-    return <div>Carregando plano alimentar...</div>
+  if (isLoading || (isEditing && planId === null)) {
+    return <div>Carregando dados do plano alimentar...</div>
   }
+
 
   return (
     <div className="min-h-screen bg">
