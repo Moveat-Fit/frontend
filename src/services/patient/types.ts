@@ -3,7 +3,7 @@ export interface PatientDetailsProps {
     birth_date: string;
     gender: 'm' | 'f' | string;
     email: string;
-    mobile: string;
+    phone: string;
     cpf: string;
     weight: number;
     height: number;
@@ -32,7 +32,7 @@ export interface PatientDetailsProps {
     birth_date: string;
     gender: 'm' | 'f' | string;
     email: string;
-    mobile: string;
+    phone: string;
     cpf: string;
     weight: number;
     height: number;

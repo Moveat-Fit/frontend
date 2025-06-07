@@ -23,7 +23,7 @@ type PatientInterface = {
     birth_date: string
     gender: string
     email: string
-    mobile: string
+    phone: string
     cpf: string
     weight: string
     height: string
@@ -240,7 +240,7 @@ export default function AllPatients() {
                                                 {calculateAge(patient.birth_date)} / {checkGender(patient.gender)}
                                             </TableCell>
                                             <TableCell className="hidden lg:table-cell">
-                                                <div>{patient.mobile}</div>
+                                                <div>{patient.phone}</div>
                                                 <div className="text-xs text-muted-foreground">{patient.email}</div>
                                             </TableCell>
                                             <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>

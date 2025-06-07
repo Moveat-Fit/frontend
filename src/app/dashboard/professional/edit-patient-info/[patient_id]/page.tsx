@@ -103,7 +103,7 @@ export default function EditPatientInfoPage() {
             birth_date: values.dateOfBirth instanceof Date ? values.dateOfBirth.toISOString().split('T')[0] : "",
             gender: values.gender.toUpperCase(),
             email: values.email,
-            mobile: values.phone,
+            phone: values.phone,
             cpf: values.cpf,
             weight: Number(values.weight),
             height: Number(values.height),
@@ -148,7 +148,7 @@ export default function EditPatientInfoPage() {
                 form.reset({
                     firstName: firstName || "",
                     lastName: lastName || "",
-                    phone: patient.mobile || "",
+                    phone: patient.phone || "",
                     email: patient.email || "",
                     observations: patient.note || "",
                     dateOfBirth: patient.birth_date ? new Date(patient.birth_date) : undefined,
