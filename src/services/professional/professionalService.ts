@@ -96,7 +96,7 @@ export const professionalUpdateDataPatientService = async (
             birth_date: userData.birth_date,
             gender: userData.gender,
             email: userData.email,
-            mobile: userData.mobile,
+            phone: userData.phone,
             cpf: userData.cpf,
             weight: userData.weight,
             height: userData.height,
