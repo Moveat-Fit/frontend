@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { SetStateAction, useCallback, useEffect, useState } from "react";
@@ -17,6 +18,7 @@ import { professionalReadAllPatientService } from "@/services/professional/profe
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { deleteMealPlan } from "@/services/meal-plan/mealPlansService";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type PatientInterface = {
     id: number
@@ -57,10 +59,12 @@ function checkGender(gender: string) {
 }
 
 export default function AllPatients() {
+    const [dropdownOpen, setDropdownOpen] = useState<{ [id: number]: boolean }>({});
+
     const router = useRouter()
     const [patients, setPatients] = useState<PatientInterface[]>([])
     const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
-
+    const [openDeleteMealPlanDialog, setOpenDeleteMealPlanDialog] = useState(false)
     const deletePatient = async (id: string) => {
         try {
             const response = await deletePatientService(id)
@@ -137,14 +141,16 @@ export default function AllPatients() {
         }, 800)
     }
 
-    const removeMealPLan = async (patientId: string) => {
+    const removeMealPlan = async (patientId: number) => {
+        const patient_id = patientId.toString();
         try {
-            const response = await deleteMealPlan(patientId)
+            const response = await deleteMealPlan(patient_id)
             console.log(response?.message)
             showToastSuccess(response?.message)
-        } catch (error: string | any) {
-            showToastError(error || "Erro ao apagar plano alimentar")
+        } catch (error: any) {
+            showToastError(error.message || "Erro ao apagar plano alimentar");
         }
+
     }
 
     if (!isClient) return null;
@@ -256,11 +262,20 @@ export default function AllPatients() {
                                             </TableCell>
                                             <TableCell className="hidden lg:table-cell">{patient.note}</TableCell>
                                             <TableCell className="text-center space-x-2">
-                                                <DropdownMenu>
+                                                <DropdownMenu
+                                                    open={dropdownOpen[patient.id] || false}
+                                                    onOpenChange={(open) =>
+                                                        setDropdownOpen((prev) => ({ ...prev, [patient.id]: open }))
+                                                    }
+                                                >
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button data-testid="button-optionsMealPlan" variant="ghost" className="text-green-600 hover:text-green-700">
+                                                                <Button
+                                                                    data-testid="button-optionsMealPlan"
+                                                                    variant="ghost"
+                                                                    className="text-green-600 hover:text-green-700"
+                                                                >
                                                                     <Utensils className="h-4 w-4" />
                                                                 </Button>
                                                             </DropdownMenuTrigger>
@@ -271,22 +286,44 @@ export default function AllPatients() {
                                                     </Tooltip>
 
                                                     <DropdownMenuContent>
-                                                        <DropdownMenuItem data-testid="button-addMealPlan" className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/new-meal-plan/${patient.id}`)}>
+                                                        <DropdownMenuItem
+                                                            data-testid="button-addMealPlan"
+                                                            className="cursor-pointer"
+                                                            onClick={() =>
+                                                                router.push(`/dashboard/professional/new-meal-plan/${patient.id}`)
+                                                            }
+                                                        >
                                                             <Plus className="w-4 h-4 mr-2" />
                                                             Adicionar plano alimentar
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem data-testid="button-updateMealPlan" className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/edit-meal-plan/${patient.id}`)}>
+
+                                                        <DropdownMenuItem
+                                                            data-testid="button-updateMealPlan"
+                                                            className="cursor-pointer"
+                                                            onClick={() =>
+                                                                router.push(`/dashboard/professional/edit-meal-plan/${patient.id}`)
+                                                            }
+                                                        >
                                                             <Pencil className="w-4 h-4 mr-2" />
                                                             Editar plano alimentar
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem data-testid="button-removeMealPlan" className="cursor-pointer" onClick={() => removeMealPLan(patient.id)}>
+
+                                                        <DropdownMenuItem
+                                                            data-testid="button-removeMealPlan"
+                                                            className="cursor-pointer"
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                setDropdownOpen((prev) => ({ ...prev, [patient.id]: false }));
+                                                                setSelectedPatientId(patient.id);
+                                                                setTimeout(() => setOpenDeleteMealPlanDialog(true), 50);
+                                                            }}
+                                                        >
                                                             <Trash className="w-4 h-4 mr-2 text-red-600" />
                                                             <span className="text-red-600">Remover plano alimentar</span>
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
-
-                                                <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`} passHref>
+                                                <Link href={`/dashboard/professional/edit-patient- info/${patient.id}`} passHref>
                                                     <Tooltip data-testid="link-editPatientInfo">
                                                         <TooltipTrigger asChild>
 
@@ -315,7 +352,6 @@ export default function AllPatients() {
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </TableCell>
-
                                         </TableRow>
                                     ))
                                 ) : (
@@ -325,7 +361,35 @@ export default function AllPatients() {
                                         </TableCell>
                                     </TableRow>
                                 )}
+
+                                {/* DIALOG FORA DO MAP */}
+                                {selectedPatientId !== null && (
+                                    <Dialog open={openDeleteMealPlanDialog} onOpenChange={setOpenDeleteMealPlanDialog}>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle className="text-primary-custom">Remover plano alimentar</DialogTitle>
+                                            </DialogHeader>
+                                            <p>Tem certeza que deseja remover este plano alimentar? Essa ação não pode ser desfeita.</p>
+                                            <DialogFooter>
+                                                <Button variant="cancel" onClick={() => setOpenDeleteMealPlanDialog(false)}>
+                                                    Cancelar
+                                                </Button>
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={() => {
+                                                        removeMealPlan(selectedPatientId);
+                                                        setOpenDeleteMealPlanDialog(false);
+                                                        setSelectedPatientId(null);
+                                                    }}
+                                                >
+                                                    Confirmar
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                )}
                             </TableBody>
+
                         </TooltipProvider>
 
                         <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
