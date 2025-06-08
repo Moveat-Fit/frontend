@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MealPlanFormData } from "@/schemas/meal-plan-schema"
 import axios from "axios";
 import { MealPlanApiPayload } from "./types";
 
@@ -39,13 +38,13 @@ export const createMealPlan = async (data: any) => {
         });
         return response.data;
     } catch (error: any) {
-        console.error("Erro ao criar plano de refeições:", error);
+        console.error("Erro ao criar plano alimentar:", error);
 
         const apiMessage =
             error?.response?.data?.message ||
             error?.response?.data?.error ||
             error?.message ||
-            "Erro ao criar o plano de refeições.";
+            "Erro ao criar o plano alimentar.";
 
         throw new Error(apiMessage);
     }
@@ -61,13 +60,13 @@ export const mealPlanDetails = async (patientId: string) => {
         });
         return response.data;
     } catch (error: any) {
-        console.error("Erro ao criar plano de refeições:", error);
+        console.error("Erro ao listar os detalhes do plano do paciente:", error);
 
         const apiMessage =
             error?.response?.data?.message ||
             error?.response?.data?.error ||
             error?.message ||
-            "Erro ao criar o plano de refeições.";
+            "Erro ao listar os detalhes do plano do paciente";
 
         throw new Error(apiMessage);
     }
@@ -84,13 +83,35 @@ export const updateMealPlan = async (patientId: string, payload: MealPlanApiPayl
         });
         return response.data;
     } catch (error: any) {
-        console.error("Erro ao criar plano de refeições:", error);
+        console.error("Erro ao atualizar plano alimentar", error);
 
         const apiMessage =
             error?.response?.data?.message ||
             error?.response?.data?.error ||
             error?.message ||
-            "Erro ao criar o plano de refeições.";
+            "Erro ao atualizar plano alimentar";
+
+        throw new Error(apiMessage);
+    }
+}
+
+export const deleteMealPlan = async (patientId: string) => {
+    try {
+        const response = await axios.delete(URL_BASE + `/api/meal-plans/${patientId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            },
+        });
+        return response.data;
+    } catch (error: any) {
+        console.error("Erro ao apagar plano alimentar:", error);
+
+        const apiMessage =
+            error?.response?.data?.message ||
+            error?.response?.data?.error ||
+            error?.message ||
+            "Erro ao apagar plano alimentar";
 
         throw new Error(apiMessage);
     }

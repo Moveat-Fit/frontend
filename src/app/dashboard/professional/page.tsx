@@ -16,6 +16,7 @@ import { deletePatientService } from "@/services/patient/patientService";
 import { professionalReadAllPatientService } from "@/services/professional/professionalService";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { deleteMealPlan } from "@/services/meal-plan/mealPlansService";
 
 type PatientInterface = {
     id: number
@@ -136,6 +137,16 @@ export default function AllPatients() {
         }, 800)
     }
 
+    const removeMealPLan = async (patientId: string) => {
+        try {
+            const response = await deleteMealPlan(patientId)
+            console.log(response?.message)
+            showToastSuccess(response?.message)
+        } catch (error: string | any) {
+            showToastError(error || "Erro ao apagar plano alimentar")
+        }
+    }
+
     if (!isClient) return null;
 
     return (
@@ -249,7 +260,7 @@ export default function AllPatients() {
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button variant="ghost" className="text-green-600 hover:text-green-700">
+                                                                <Button data-testid="button-optionsMealPlan" variant="ghost" className="text-green-600 hover:text-green-700">
                                                                     <Utensils className="h-4 w-4" />
                                                                 </Button>
                                                             </DropdownMenuTrigger>
@@ -260,15 +271,15 @@ export default function AllPatients() {
                                                     </Tooltip>
 
                                                     <DropdownMenuContent>
-                                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/new-meal-plan/${patient.id}`)}>
+                                                        <DropdownMenuItem data-testid="button-addMealPlan" className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/new-meal-plan/${patient.id}`)}>
                                                             <Plus className="w-4 h-4 mr-2" />
                                                             Adicionar plano alimentar
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/edit-meal-plan/${patient.id}`)}>
+                                                        <DropdownMenuItem data-testid="button-updateMealPlan" className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/edit-meal-plan/${patient.id}`)}>
                                                             <Pencil className="w-4 h-4 mr-2" />
                                                             Editar plano alimentar
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/dashboard/professional/remove-meal-plan/${patient.id}`)}>
+                                                        <DropdownMenuItem data-testid="button-removeMealPlan" className="cursor-pointer" onClick={() => removeMealPLan(patient.id)}>
                                                             <Trash className="w-4 h-4 mr-2 text-red-600" />
                                                             <span className="text-red-600">Remover plano alimentar</span>
                                                         </DropdownMenuItem>
