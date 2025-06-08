@@ -76,7 +76,6 @@ export default function AllPatients() {
     }
 
     const handleDeleteClick = async (id: number) => {
-        //setMenuOpen(false);
         await new Promise((resolve) => setTimeout(resolve, 10));
         setSelectedPatientId(id);
         setDialogOpen(true);
@@ -323,7 +322,7 @@ export default function AllPatients() {
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
-                                                <Link href={`/dashboard/professional/edit-patient- info/${patient.id}`} passHref>
+                                                <Link href={`/dashboard/professional/edit-patient-info/${patient.id}`} passHref>
                                                     <Tooltip data-testid="link-editPatientInfo">
                                                         <TooltipTrigger asChild>
 
