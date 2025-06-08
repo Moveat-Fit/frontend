@@ -6,10 +6,6 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function PatientInfo() {
     const { user } = useAuth();
 
-    const patientNameCapitalized = user?.full_name
-        ? user.full_name.split(" ")[0].charAt(0).toUpperCase() + user.full_name.split(" ")[0].slice(1).toLowerCase()
-        : "";
-
     const patientAge = user?.birth_date
         ? new Date().getFullYear() - Number(user.birth_date.split("-")[0])
         : undefined;
@@ -33,9 +29,9 @@ export default function PatientInfo() {
                                 </AvatarFallback>
                             </Avatar>
                             <div>
-                                <CardTitle className="text-2xl">{patientNameCapitalized}</CardTitle>
+                                <CardTitle className="text-2xl">{user?.full_name}</CardTitle>
                                 <CardDescription className="text-base">
-                                    Idade: {patientAge} • Nutricionista: MockName
+                                    Idade: {patientAge}
                                 </CardDescription>
                             </div>
                         </div>
