@@ -83,20 +83,29 @@ export default function AddFoodToMeal({ foodList, mealIndex }: AddFoodToMealProp
                                 <FormField
                                     control={control}
                                     name={`meals.${mealIndex}.foods.${foodIndex}.portion`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs">Porção</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    data-testid="input-foodPortion"
-                                                    placeholder="Ex: 100g, 1 xícara"
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
+                                    render={({ field }) => {
+                                        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const valueWithoutComma = e.target.value.replace(/,/g, '.');
+                                            field.onChange(valueWithoutComma);
+                                        };
+
+                                        return (
+                                            <FormItem>
+                                                <FormLabel className="text-xs">Porção</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        data-testid="input-foodPortion"
+                                                        placeholder="Ex: 100g, 1 xícara"
+                                                        {...field}
+                                                        onChange={handleChange}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        );
+                                    }}
                                 />
+
 
                             </div>
 
