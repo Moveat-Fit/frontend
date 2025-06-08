@@ -16,6 +16,7 @@ import { format } from "date-fns"
 import { createMealPlan, updateMealPlan, mealPlanDetails } from "@/services/meal-plan/mealPlansService"
 import ToastError from "../ToastError"
 import ToastSuccess from "../ToastSuccess"
+import { showToastError } from "@/utils/toast"
 
 export default function MealPlanForm() {
   const router = useRouter()
@@ -126,10 +127,16 @@ export default function MealPlanForm() {
     }
   }
 
-  if (isLoading || (isEditing && planId === null)) {
+  useEffect(() => {
+    if (!isLoading && isEditing && planId === null) {
+      showToastError("O usuário não possui um plano alimentar.")
+      router.push("/dashboard/professional")
+    }
+  }, [isLoading, isEditing, planId, router])
+
+  if (isLoading) {
     return <div>Carregando dados do plano alimentar...</div>
   }
-
 
   return (
     <div className="min-h-screen bg">
