@@ -3,7 +3,7 @@ import { z } from "zod";
 export const mealPlanSchema = z.object({
     planName: z.string().min(1, "Nome do plano é obrigatório."),
     startDate: z.date({ message: "Data de início é obrigatória." }),
-    endDate: z.date({ message: "Data de início é obrigatória." }),
+    endDate: z.date({ message: "Data de término é obrigatória." }),
     goals: z.string().optional(),
     meals: z.array(
         z.object({

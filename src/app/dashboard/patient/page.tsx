@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/contexts/AuthContext"
 import { mealPlanDetails } from "@/services/meal-plan/mealPlansService"
-import { Calendar, CheckCircle2, Target, TrendingUp } from "lucide-react"
+import { Calendar, CheckCircle2, Target, TrendingUp, Frown } from "lucide-react"
 import { useEffect, useState } from "react"
 
 
@@ -129,99 +129,114 @@ export default function PatientDashboard() {
       <div className="max-w-6xl space-y-6">
         <PatientInfo />
 
-        {/* Progress Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Progresso Semanal</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Semana {weeklyProgress.currentWeek}</div>
-              <p className="text-xs text-muted-foreground">de {weeklyProgress.totalWeeks} semanas</p>
-              <Progress value={(weeklyProgress.currentWeek / weeklyProgress.totalWeeks) * 100} className="mt-2" />
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Perda de peso</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{weeklyProgress.weightLoss} kg</div>
-              <p className="text-xs text-muted-foreground">Perda essa semana</p>
-            </CardContent>
-          </Card>
+        {mealPlan != null ? (
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Progresso Semanal</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">Semana {weeklyProgress.currentWeek}</div>
+                  <p className="text-xs text-muted-foreground">de {weeklyProgress.totalWeeks} semanas</p>
+                  <Progress value={(weeklyProgress.currentWeek / weeklyProgress.totalWeeks) * 100} className="mt-2" />
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Aderência do plano</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{weeklyProgress.adherence}%</div>
-              <p className="text-xs text-muted-foreground">Essa semana</p>
-              <Progress value={weeklyProgress.adherence} className="mt-2" />
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Perda de peso</CardTitle>
+                  <Target className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{weeklyProgress.weightLoss} kg</div>
+                  <p className="text-xs text-muted-foreground">Perda essa semana</p>
+                </CardContent>
+              </Card>
 
-        <Tabs defaultValue="today" className="space-y-4">
-          <TabsList className="gap-4">
-            <TabsTrigger value="today">Plano alimentar de hoje</TabsTrigger>
-            <TabsTrigger value="week">Visão semanal</TabsTrigger>
-            <TabsTrigger value="nutrition">Objetivos nutricionais</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="today" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      Refeições de hoje
-                    </CardTitle>
-                    <CardDescription>
-                      {completedCount} de {totalMeals} refeições completas
-                    </CardDescription>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold">{caloriesConsumed}</div>
-                    <div className="text-sm text-muted-foreground">de {dailyPlan.totalCalories} calories</div>
-                    <Progress value={(caloriesConsumed / dailyPlan.totalCalories) * 100} className="mt-2 w-32" />
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {mealPlan?.meals.map((meal, index) => (
-                <MealCard
-                  key={getMealKey(meal, index)}
-                  meal={{
-                    ...meal,
-                    id: getMealKey(meal, index),
-                  }}
-                  completedMeals={completedMeals}
-                  toggleMealCompletion={toggleMealCompletion}
-                  selectedMeal={selectedMeal}
-                  setSelectedMeal={setSelectedMeal}
-                />
-              ))}
-
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Aderência do plano</CardTitle>
+                  <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{weeklyProgress.adherence}%</div>
+                  <p className="text-xs text-muted-foreground">Essa semana</p>
+                  <Progress value={weeklyProgress.adherence} className="mt-2" />
+                </CardContent>
+              </Card>
             </div>
-          </TabsContent>
 
-          <TabsContent value="week">
-            <WeeklyOverview />
-          </TabsContent>
+            <Tabs defaultValue="today" className="space-y-4 mt-4">
+              <TabsList className="gap-4">
+                <TabsTrigger value="today">Plano alimentar de hoje</TabsTrigger>
+                <TabsTrigger value="week">Visão semanal</TabsTrigger>
+                <TabsTrigger value="nutrition">Objetivos nutricionais</TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="nutrition">
-            <NutritionGoals />
-          </TabsContent>
-        </Tabs>
+              <TabsContent value="today" className="space-y-4">
+                <Card className="mt-[-8px]">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Calendar className="h-5 w-5" />
+                          Refeições de hoje
+                        </CardTitle>
+                        <CardDescription>
+                          {completedCount} de {totalMeals} refeições completas
+                        </CardDescription>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold">{caloriesConsumed}</div>
+                        <div className="text-sm text-muted-foreground">de {dailyPlan.totalCalories} calories</div>
+                        <Progress value={(caloriesConsumed / dailyPlan.totalCalories) * 100} className="mt-2 w-32" />
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {mealPlan?.meals.map((meal, index) => (
+                    <MealCard
+                      key={getMealKey(meal, index)}
+                      meal={{
+                        ...meal,
+                        id: getMealKey(meal, index),
+                      }}
+                      completedMeals={completedMeals}
+                      toggleMealCompletion={toggleMealCompletion}
+                      selectedMeal={selectedMeal}
+                      setSelectedMeal={setSelectedMeal}
+                    />
+                  ))}
+
+                </div>
+              </TabsContent>
+
+              <TabsContent value="week">
+                <WeeklyOverview />
+              </TabsContent>
+
+              <TabsContent value="nutrition">
+                <NutritionGoals />
+              </TabsContent>
+            </Tabs>
+          </div>
+        ) : (
+          <Card>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <Frown className="h-8 w-8 mx-auto mb-4" />
+                <p>Seu plano alimentar ainda não está disponível.</p>
+                <p>Entre em contato com o seu nutricionista para obter mais informações.</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
       </div>
     </div>
   )
